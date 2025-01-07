@@ -1,0 +1,44 @@
+{
+    "name": "dailydesk/monitor-laravel",
+    "description": "DailyDesk Monitor for Laravel applications.",
+    "keywords": [
+        "dailydesk",
+        "monitor",
+        "monitor-laravel"
+    ],
+    "homepage": "https://github.com/dailydesk/monitor-laravel",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.2 <9",
+        "dailydesk/monitor-php": "dev-main"
+    },
+    "required-dev": {
+        "inspector-apm/inspector-laravel": "^4.9"
+    },
+    "autoload": {
+        "files": [
+            "helpers.php"
+        ],
+        "psr-4": {
+            "DailyDesk\\Monitor\\Laravel\\": "src"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "DailyDesk\\Monitor\\Laravel\\MonitorServiceProvider"
+            ],
+            "aliases": {
+                "Monitor": "DailyDesk\\Laravel\\Facades\\Monitor"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
