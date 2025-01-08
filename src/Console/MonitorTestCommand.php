@@ -55,7 +55,7 @@ class MonitorTestCommand extends Command
         monitor()->addSegment(function (Segment $segment) use ($config) {
             \usleep(10 * 1000);
 
-            $config->get('monitor.enable')
+            $config->get('monitor.enabled')
                 ? $this->info('✅ Monitor is enabled.')
                 : $this->warn('❌ Monitor is actually disabled, turn to true the `enable` ' .
                 'field of the `monitor` config file.');

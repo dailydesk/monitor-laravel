@@ -10,7 +10,7 @@ return [
     |
     */
 
-    'enable' => env('MONITOR_ENABLED', true),
+    'enabled' => env('MONITOR_ENABLED', true),
 
     /*
     |--------------------------------------------------------------------------

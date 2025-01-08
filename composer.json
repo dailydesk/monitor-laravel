@@ -9,8 +9,12 @@
     "homepage": "https://github.com/dailydesk/monitor-laravel",
     "license": "MIT",
     "require": {
-        "php": ">=7.2 <9",
-        "dailydesk/monitor-php": "dev-main"
+        "php": "^8.0",
+        "dailydesk/monitor-php": "dev-main",
+        "illuminate/console": "^11",
+        "illuminate/contracts": "^11",
+        "illuminate/http": "^11",
+        "illuminate/support": "^11"
     },
     "required-dev": {
         "inspector-apm/inspector-laravel": "^4.9"

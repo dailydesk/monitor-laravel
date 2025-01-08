@@ -23,7 +23,9 @@ class MonitorServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->publishes([__DIR__ . '/../config/monitor.php' => $this->app->configPath('monitor.php')]);
+        $this->publishes([
+            __DIR__ . '/../config/monitor.php' => $this->app->configPath('monitor.php'),
+        ]);
 
         $this->commands([
             MonitorTestCommand::class,
@@ -48,21 +50,23 @@ class MonitorServiceProvider extends ServiceProvider
 
     protected function registerMonitorInstance(): void
     {
-        $this->app->singleton('monitor', function () {
-            $configuration = (new Configuration(config('monitor.key')))
-                ->setEnabled(config('monitor.enabled', true))
-                ->setUrl(config('monitor.url', 'https://monitor.dailydesk.app'))
+        $this->app->singleton('monitor', function ($app) {
+            $config = $app->make('config');
+            
+            $configuration = (new Configuration($config->get('monitor.key')))
+                ->setEnabled($config->get('monitor.enabled', true))
+                ->setUrl($config->get('monitor.url', 'https://monitor.dailydesk.app'))
                 ->setVersion(self::VERSION)
-                ->setTransport(config('monitor.transport', 'async'))
-                ->setOptions(config('monitor.options', []))
-                ->setMaxItems(config('monitor.max_items', 100));
+                ->setTransport($config->get('monitor.transport', 'async'))
+                ->setOptions($config->get('monitor.options', []))
+                ->setMaxItems($config->get('monitor.max_items', 100));
 
             return new Monitor($configuration);
         });
     }
 
     /**
-     * Bind Inspector service providers based on package configuration.
+     * Bind service providers based on package configuration.
      */
     public function registerMonitorServiceProviders()
     {

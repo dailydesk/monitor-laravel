@@ -77,7 +77,7 @@ class CommandServiceProvider extends ServiceProvider
     protected function shouldBeMonitored(?string $command): bool
     {
         if (\is_string($command)) {
-            return Filters::isApprovedArtisanCommand($command, config('inspector.ignore_commands'));
+            return Filters::isApprovedArtisanCommand($command, config('monitor.ignore_commands'));
         }
 
         return false;
