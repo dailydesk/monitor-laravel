@@ -211,7 +211,7 @@ return [
     |
     */
 
-    'ignore_commands' => [
+    'ignored_commands' => [
         'storage:link',
         'optimize',
         'optimize:clear',
@@ -258,7 +258,7 @@ return [
     |
     */
 
-    'ignore_url' => [
+    'ignored_urls' => [
         'telescope*',
         'vendor/telescope*',
         'horizon*',

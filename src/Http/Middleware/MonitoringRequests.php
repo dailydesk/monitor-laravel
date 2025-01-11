@@ -6,9 +6,9 @@ use Closure;
 use DailyDesk\Monitor\Laravel\Facades\Monitor;
 use DailyDesk\Monitor\Laravel\Filters;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Inspector\Models\Transaction;
+use Symfony\Component\HttpFoundation\Response;
 
 class MonitoringRequests
 {
@@ -25,7 +25,7 @@ class MonitoringRequests
         if (
             Monitor::needTransaction()
             &&
-            Filters::isApprovedRequest(config('monitor.ignore_url'), $request->decodedPath())
+            Filters::isApprovedRequest(config('monitor.ignored_urls'), $request->decodedPath())
             &&
             $this->shouldRecorded($request)
         ) {
@@ -78,7 +78,7 @@ class MonitoringRequests
      * Terminates a request/response cycle.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \Illuminate\Http\Response $response
+     * @param \Symfony\Component\HttpFoundation\Response $response
      */
     public function terminate(Request $request, Response $response): void
     {
