@@ -10,6 +10,7 @@ use DailyDesk\Monitor\Laravel\Providers\GateServiceProvider;
 use DailyDesk\Monitor\Laravel\Providers\HttpClientServiceProvider;
 use DailyDesk\Monitor\Laravel\Providers\JobServiceProvider;
 use DailyDesk\Monitor\Laravel\Providers\MailServiceProvider;
+use DailyDesk\Monitor\Laravel\Providers\NotificationServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 class MonitorServiceProvider extends ServiceProvider
@@ -57,6 +58,7 @@ class MonitorServiceProvider extends ServiceProvider
             GateServiceProvider::class => true,
             HttpClientServiceProvider::class => config('monitor.http_client'),
             JobServiceProvider::class => config('monitor.job'),
+            NotificationServiceProvider::class => config('monitor.notification'),
         ] as $provider => $enabled) {
             if ($enabled) {
                 $this->app->register($provider);

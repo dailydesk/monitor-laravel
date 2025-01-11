@@ -129,7 +129,7 @@ return [
     |
     */
 
-    'notifications' => env('MONITOR_NOTIFICATIONS', true),
+    'notification' => env('MONITOR_NOTIFICATION', true),
 
     /*
     |--------------------------------------------------------------------------
