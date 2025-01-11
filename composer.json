@@ -10,13 +10,13 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
-        "dailydesk/monitor-php": "^0.1.0",
+        "dailydesk/monitor-php": "^0.1.1",
         "illuminate/console": "^11",
         "illuminate/contracts": "^11",
         "illuminate/http": "^11",
         "illuminate/support": "^11"
     },
-    "required-dev": {
+    "require-dev": {
         "inspector-apm/inspector-laravel": "^4.9"
     },
     "autoload": {

@@ -5,16 +5,22 @@ namespace DailyDesk\Monitor\Laravel;
 use DailyDesk\Monitor\Configuration;
 use DailyDesk\Monitor\Laravel\Console\MonitorTestCommand;
 use DailyDesk\Monitor\Laravel\Providers\CommandServiceProvider;
-use Illuminate\Support\ServiceProvider;
+use DailyDesk\Monitor\Laravel\Providers\DatabaseServiceProvider;
+use Illuminate\Support\AggregateServiceProvider;
 
-class MonitorServiceProvider extends ServiceProvider
+class MonitorServiceProvider extends AggregateServiceProvider
 {
     /**
      * The latest version of the client library.
      *
      * @var string
      */
-    const VERSION = 'dev-main';
+    public const VERSION = 'dev-main';
+
+    protected $providers = [
+        CommandServiceProvider::class,
+        DatabaseServiceProvider::class,
+    ];
 
     /**
      * Booting of services.
@@ -39,13 +45,13 @@ class MonitorServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        parent::register();
+
         // Default package configuration
         $this->mergeConfigFrom(__DIR__ . '/../config/monitor.php', 'monitor');
 
         // Bind Monitor service class
         $this->registerMonitorInstance();
-
-        $this->registerMonitorServiceProviders();
     }
 
     protected function registerMonitorInstance(): void
@@ -57,19 +63,11 @@ class MonitorServiceProvider extends ServiceProvider
                 ->setEnabled($config->get('monitor.enabled', true))
                 ->setUrl($config->get('monitor.url', 'https://monitor.dailydesk.app'))
                 ->setVersion(self::VERSION)
-                ->setTransport($config->get('monitor.transport', 'async'))
+                ->setTransport($config->get('monitor.transport', 'sync'))
                 ->setOptions($config->get('monitor.options', []))
                 ->setMaxItems($config->get('monitor.max_items', 100));
 
             return new Monitor($configuration);
         });
-    }
-
-    /**
-     * Bind service providers based on package configuration.
-     */
-    public function registerMonitorServiceProviders()
-    {
-        $this->app->register(CommandServiceProvider::class);
     }
 }
