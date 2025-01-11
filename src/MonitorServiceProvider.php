@@ -6,10 +6,11 @@ use DailyDesk\Monitor\Configuration;
 use DailyDesk\Monitor\Laravel\Console\MonitorTestCommand;
 use DailyDesk\Monitor\Laravel\Providers\CommandServiceProvider;
 use DailyDesk\Monitor\Laravel\Providers\DatabaseServiceProvider;
+use DailyDesk\Monitor\Laravel\Providers\GateServiceProvider;
 use DailyDesk\Monitor\Laravel\Providers\MailServiceProvider;
-use Illuminate\Support\AggregateServiceProvider;
+use Illuminate\Support\ServiceProvider;
 
-class MonitorServiceProvider extends AggregateServiceProvider
+class MonitorServiceProvider extends ServiceProvider
 {
     /**
      * The latest version of the client library.
@@ -17,12 +18,6 @@ class MonitorServiceProvider extends AggregateServiceProvider
      * @var string
      */
     public const VERSION = 'dev-main';
-
-    protected $providers = [
-        CommandServiceProvider::class,
-        DatabaseServiceProvider::class,
-        MailServiceProvider::class,
-    ];
 
     /**
      * Booting of services.
@@ -47,13 +42,22 @@ class MonitorServiceProvider extends AggregateServiceProvider
      */
     public function register()
     {
-        parent::register();
-
         // Default package configuration
         $this->mergeConfigFrom(__DIR__ . '/../config/monitor.php', 'monitor');
 
         // Bind Monitor service class
         $this->registerMonitorInstance();
+
+        foreach ([
+            CommandServiceProvider::class => true,
+            DatabaseServiceProvider::class => true,
+            MailServiceProvider::class => config('monitor.mail'),
+            GateServiceProvider::class => true,
+        ] as $provider => $enabled) {
+            if ($enabled) {
+                $this->app->register($provider);
+            }
+        }
     }
 
     protected function registerMonitorInstance(): void
