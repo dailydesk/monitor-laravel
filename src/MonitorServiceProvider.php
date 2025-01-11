@@ -6,6 +6,7 @@ use DailyDesk\Monitor\Configuration;
 use DailyDesk\Monitor\Laravel\Console\MonitorTestCommand;
 use DailyDesk\Monitor\Laravel\Providers\CommandServiceProvider;
 use DailyDesk\Monitor\Laravel\Providers\DatabaseServiceProvider;
+use DailyDesk\Monitor\Laravel\Providers\MailServiceProvider;
 use Illuminate\Support\AggregateServiceProvider;
 
 class MonitorServiceProvider extends AggregateServiceProvider
@@ -20,6 +21,7 @@ class MonitorServiceProvider extends AggregateServiceProvider
     protected $providers = [
         CommandServiceProvider::class,
         DatabaseServiceProvider::class,
+        MailServiceProvider::class,
     ];
 
     /**
