@@ -7,6 +7,8 @@ use DailyDesk\Monitor\Laravel\Console\MonitorTestCommand;
 use DailyDesk\Monitor\Laravel\Providers\CommandServiceProvider;
 use DailyDesk\Monitor\Laravel\Providers\DatabaseServiceProvider;
 use DailyDesk\Monitor\Laravel\Providers\GateServiceProvider;
+use DailyDesk\Monitor\Laravel\Providers\HttpClientServiceProvider;
+use DailyDesk\Monitor\Laravel\Providers\JobServiceProvider;
 use DailyDesk\Monitor\Laravel\Providers\MailServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
@@ -53,6 +55,8 @@ class MonitorServiceProvider extends ServiceProvider
             DatabaseServiceProvider::class => true,
             MailServiceProvider::class => config('monitor.mail'),
             GateServiceProvider::class => true,
+            HttpClientServiceProvider::class => config('monitor.http_client'),
+            JobServiceProvider::class => config('monitor.job'),
         ] as $provider => $enabled) {
             if ($enabled) {
                 $this->app->register($provider);

@@ -276,7 +276,7 @@ return [
     |
     */
 
-    'ignore_jobs' => [
+    'ignored_jobs' => [
         //\App\Jobs\MyJob::class
     ],
 ];
