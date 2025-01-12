@@ -3,10 +3,10 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Enabling
+    | Monitor Enabled Mode
     |--------------------------------------------------------------------------
     |
-    | Setting "false" the package stop sending data to Inspector.
+    | Determine if monitor clients should sending data to the Monitor service.
     |
     */
 
@@ -14,13 +14,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | API Key
+    | Monitor Ingestion Key
     |--------------------------------------------------------------------------
     |
-    | You can find your API key on your Inspector project settings page.
+    | This key is for the Monitor service to detect which application should be
+    | picked when recording data.
     |
-    | This API key points the Inspector notifier to the project in your account
-    | which should receive your application's events & exceptions.
+    | You can find this key on your application settings page.
     |
     */
 
@@ -28,22 +28,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Remote URL
+    | Monitor URL
     |--------------------------------------------------------------------------
-    |
-    | You can set the url of the remote endpoint to send data to.
-    |
     */
 
     'url' => env('MONITOR_URL', 'https://monitor.dailydesk.app'),
 
     /*
     |--------------------------------------------------------------------------
-    | Transport method
+    | Monitor Transport Method
     |--------------------------------------------------------------------------
     |
-    | This is where you can set the data transport method.
-    | Supported options: "sync", "async"
+    | Supported: "async" or "sync"
     |
     */
 
@@ -51,7 +47,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Max number of items.
+    | Monitor Max Items.
     |--------------------------------------------------------------------------
     |
     | Max number of items to record in a single execution cycle.
@@ -62,11 +58,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Custom transport options
+    | Monitor Transport Options
     |--------------------------------------------------------------------------
     |
-    | This is where you can set the transport option settings you'd like us to use when
-    | communicating with Inspector.
+    | Use these options to customize the way monitor clients communicate with
+    | the Monitor service
     |
     */
 
@@ -74,6 +70,75 @@ return [
         // 'proxy' => 'https://55.88.22.11:3128',
         // 'curlPath' => '/opt/bin/curl',
     ],
+
+     'recording' => [
+
+         'console' => [
+
+             'enabled' => env('MONITOR_COMMAND', true),
+
+             'ignored_commands' => [
+                 'storage:link',
+                 'optimize',
+                 'optimize:clear',
+                 'schedule:run',
+                 'schedule:finish',
+                 'package:discover',
+                 'vendor:publish',
+                 'list',
+                 'test',
+                 'migrate',
+                 'migrate:rollback',
+                 'migrate:refresh',
+                 'migrate:fresh',
+                 'migrate:reset',
+                 'migrate:install',
+                 'db:seed',
+                 'cache:clear',
+                 'config:cache',
+                 'config:clear',
+                 'route:cache',
+                 'route:clear',
+                 'view:cache',
+                 'view:clear',
+                 'queue:listen',
+                 'queue:work',
+                 'queue:restart',
+                 'vapor:work',
+                 'vapor:health-check',
+                 'horizon',
+                 'horizon:work',
+                 'horizon:supervisor',
+                 'horizon:terminate',
+                 'horizon:snapshot',
+                 'nova:publish',
+             ],
+
+         ],
+
+         'exception' => [
+             'enabled' => env('MONITOR_EXCEPTION', true)
+         ],
+
+         'http' => [
+
+             'enabled' => env('MONITOR_REQUEST', true),
+
+             'user' => env('MONITOR_USER', true),
+
+             'ignored_urls' => [
+                 'telescope*',
+                 'vendor/telescope*',
+                 'horizon*',
+                 'vendor/horizon*',
+                 'nova*'
+             ],
+
+         ],
+
+     ],
+
+    // TODO: Remove the following lines.
 
     /*
     |--------------------------------------------------------------------------
@@ -96,18 +161,6 @@ return [
     */
 
     'bindings' => env('MONITOR_QUERY_BINDINGS', true),
-
-    /*
-    |--------------------------------------------------------------------------
-    | User
-    |--------------------------------------------------------------------------
-    |
-    | Enable this if you'd like us to set the current user logged in via
-    | Laravel's authentication system.
-    |
-    */
-
-    'user' => env('MONITOR_USER', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -199,71 +252,6 @@ return [
     'hidden_parameters' => [
         'password',
         'password_confirmation'
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Artisan command to ignore
-    |--------------------------------------------------------------------------
-    |
-    | Add at this list all command signature that you don't want monitoring
-    | in your Inspector dashboard.
-    |
-    */
-
-    'ignored_commands' => [
-        'storage:link',
-        'optimize',
-        'optimize:clear',
-        'schedule:run',
-        'schedule:finish',
-        'package:discover',
-        'vendor:publish',
-        'list',
-        'test',
-        'migrate',
-        'migrate:rollback',
-        'migrate:refresh',
-        'migrate:fresh',
-        'migrate:reset',
-        'migrate:install',
-        'db:seed',
-        'cache:clear',
-        'config:cache',
-        'config:clear',
-        'route:cache',
-        'route:clear',
-        'view:cache',
-        'view:clear',
-        'queue:listen',
-        'queue:work',
-        'queue:restart',
-        'vapor:work',
-        'vapor:health-check',
-        'horizon',
-        'horizon:work',
-        'horizon:supervisor',
-        'horizon:terminate',
-        'horizon:snapshot',
-        'nova:publish',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Web request url to ignore
-    |--------------------------------------------------------------------------
-    |
-    | Add at this list the url schemes that you don't want monitoring
-    | in your Inspector dashboard. You can also use wildcard expression (*).
-    |
-    */
-
-    'ignored_urls' => [
-        'telescope*',
-        'vendor/telescope*',
-        'horizon*',
-        'vendor/horizon*',
-        'nova*'
     ],
 
     /*

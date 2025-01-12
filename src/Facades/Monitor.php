@@ -21,6 +21,11 @@ use Inspector\Models\Transaction;
  * @method static Error reportException(\Throwable $exception, $handled = true)
  * @method static void flush()
  * @method static void beforeFlush(callable $callback)
+ * @method static Transaction start()
+ * @method static Error report(\Throwable $e, $handled = false)
+ * @method static bool shouldRecordRequest(\Illuminate\Http\Request $request)
+ * @method static bool shouldRecordCommand(?string $command)
+ * @method static bool shouldRecordException(\Throwable $e)
  */
 class Monitor extends Facade
 {
