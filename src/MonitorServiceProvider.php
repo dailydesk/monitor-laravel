@@ -14,8 +14,8 @@ class MonitorServiceProvider extends AggregateServiceProvider
         Providers\GateServiceProvider::class,
         Providers\HttpClientServiceProvider::class,
         Providers\HttpServiceProvider::class,
-//        Providers\JobServiceProvider::class,
         Providers\MailServiceProvider::class,
         Providers\NotificationServiceProvider::class,
+        Providers\QueueServiceProvider::class,
     ];
 }

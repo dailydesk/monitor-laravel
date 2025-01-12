@@ -120,6 +120,16 @@ return [
              'enabled' => env('MONITOR_EXCEPTION', true)
          ],
 
+         'database' => [
+             'query' => env('MONITOR_DB_QUERY', true),
+             'bindings' => env('MONITOR_DB_BINDINGS', true),
+         ],
+
+         'http_client' => [
+             'enabled' => env('MONITOR_HTTP_CLIENT', true),
+             'body' => env('MONITOR_HTTP_CLIENT_BODY', true),
+         ],
+
          'http' => [
 
              'enabled' => env('MONITOR_REQUEST', true),
@@ -136,14 +146,12 @@ return [
 
          ],
 
-         'database' => [
-             'query' => env('MONITOR_DB_QUERY', true),
-             'bindings' => env('MONITOR_DB_BINDINGS', true),
-         ],
+         'queue' => [
+             'enabled' => env('MONITOR_QUEUE', true),
 
-         'http_client' => [
-             'enabled' => env('MONITOR_HTTP_CLIENT', true),
-             'body' => env('MONITOR_HTTP_CLIENT_BODY', true),
+             'ignored_jobs' => [
+                 // \App\Jobs\IgnoredAction::class,
+             ],
          ],
 
          'mail' => [
@@ -158,8 +166,6 @@ return [
 
     // TODO: Remove the following lines.
 
-
-
     /*
     |--------------------------------------------------------------------------
     | View
@@ -170,17 +176,6 @@ return [
     */
 
     'views' => env('MONITOR_VIEWS', true),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Job
-    |--------------------------------------------------------------------------
-    |
-    | Enable this if you'd like us to monitor background job processing.
-    |
-    */
-
-    'job' => env('MONITOR_JOB', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -216,19 +211,5 @@ return [
     'hidden_parameters' => [
         'password',
         'password_confirmation'
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Job classes to ignore
-    |--------------------------------------------------------------------------
-    |
-    | Add at this list the job classes that you don't want monitoring
-    | in your Inspector dashboard.
-    |
-    */
-
-    'ignored_jobs' => [
-        //\App\Jobs\MyJob::class
     ],
 ];

@@ -30,6 +30,7 @@ use Inspector\Models\Transaction;
  * @method static bool shouldRecordDatabaseBindings()
  * @method static bool shouldRecordHttpClient()
  * @method static bool shouldRecordHttpClientBody()
+ * @method static bool shouldRecordJob(string $job)
  * @method static bool shouldRecordMail()
  * @method static bool shouldRecordNotification()
  */
