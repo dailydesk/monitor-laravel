@@ -26,6 +26,10 @@ class NotificationServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (! Monitor::shouldRecordNotification()) {
+            return;
+        }
+
         $this->app['events']->listen(NotificationSending::class, function (NotificationSending $event) {
             if (Monitor::canAddSegments()) {
                 $this->segments[
@@ -45,15 +49,5 @@ class NotificationServiceProvider extends ServiceProvider
                     ->end();
             }
         });
-    }
-
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
     }
 }

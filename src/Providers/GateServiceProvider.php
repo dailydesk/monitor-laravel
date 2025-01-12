@@ -24,9 +24,6 @@ class GateServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (! config('monitor.gate')) {
-            return;
-        }
         Gate::before([$this, 'beforeGateCheck']);
         Gate::after([$this, 'afterGateCheck']);
     }
@@ -70,7 +67,7 @@ class GateServiceProvider extends ServiceProvider
 
         if (array_key_exists($key, $this->segments)) {
             $this->segments[$key]
-                ->addContext('Check', [
+                ->addContext('check', [
                     'ability' => $ability,
                     'result' => $result ? 'allowed' : 'denied',
                     'arguments' => $arguments,
@@ -79,7 +76,7 @@ class GateServiceProvider extends ServiceProvider
 
             if ($caller = $this->getCallerFromStackTrace()) {
                 $this->segments[$key]
-                    ->addContext('Caller', [
+                    ->addContext('caller', [
                         'file' => $caller['file'],
                         'line' => $caller['line'],
                     ]);

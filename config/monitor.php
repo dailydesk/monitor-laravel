@@ -136,53 +136,29 @@ return [
 
          ],
 
+         'database' => [
+             'query' => env('MONITOR_DB_QUERY', true),
+             'bindings' => env('MONITOR_DB_BINDINGS', true),
+         ],
+
+         'http_client' => [
+             'enabled' => env('MONITOR_HTTP_CLIENT', true),
+             'body' => env('MONITOR_HTTP_CLIENT_BODY', true),
+         ],
+
+         'mail' => [
+             'enabled' => env('MONITOR_MAIL', true),
+         ],
+
+         'notification' => [
+             'enabled' => env('MONITOR_NOTIFICATION', true),
+         ],
+
      ],
 
     // TODO: Remove the following lines.
 
-    /*
-    |--------------------------------------------------------------------------
-    | Query
-    |--------------------------------------------------------------------------
-    |
-    | Enable this if you'd like us to automatically add all queries executed in the timeline.
-    |
-    */
 
-    'query' => env('MONITOR_QUERY', true),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Bindings
-    |--------------------------------------------------------------------------
-    |
-    | Enable this if you'd like us to include the query bindings.
-    |
-    */
-
-    'bindings' => env('MONITOR_QUERY_BINDINGS', true),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Mail
-    |--------------------------------------------------------------------------
-    |
-    | Enable this if you'd like us to monitor email sending.
-    |
-    */
-
-    'mail' => env('MONITOR_MAIL', true),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Notifications
-    |--------------------------------------------------------------------------
-    |
-    | Enable this if you'd like us to monitor notifications.
-    |
-    */
-
-    'notification' => env('MONITOR_NOTIFICATION', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -227,18 +203,6 @@ return [
     */
 
     'unhandled_exceptions' => env('MONITOR_UNHANDLED_EXCEPTIONS', true),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Http Client monitoring
-    |--------------------------------------------------------------------------
-    |
-    | Enable this if you'd like us to report the http requests done using the Laravel Http Client.
-    |
-    */
-
-    'http_client' => env('MONITOR_HTTP_CLIENT', true),
-    'http_client_body' => env('MONITOR_HTTP_CLIENT_BODY', false),
 
     /*
     |--------------------------------------------------------------------------

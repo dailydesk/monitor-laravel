@@ -26,6 +26,10 @@ class MailServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (! Monitor::shouldRecordMail()) {
+            return;
+        }
+
         $this->app['events']->listen(MessageSending::class, function (MessageSending $event) {
             if (Monitor::canAddSegments()) {
                 $this->segments[
@@ -48,16 +52,6 @@ class MailServiceProvider extends ServiceProvider
                 $this->segments[$key]->end();
             }
         });
-    }
-
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
     }
 
     /**

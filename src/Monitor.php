@@ -30,7 +30,7 @@ class Monitor extends \DailyDesk\Monitor\Monitor
      */
     public function shouldRecordException(Throwable $e): bool
     {
-        return config('monitor.recording.exception.enabled');
+        return $this->isRecording() && config('monitor.recording.exception.enabled');
     }
 
     /**
@@ -41,7 +41,7 @@ class Monitor extends \DailyDesk\Monitor\Monitor
     {
         $ignoredUrls = config('monitor.recording.http.ignored_urls');
 
-        return config('monitor.recording.http.enabled') && Filters::isApprovedRequest($ignoredUrls, $request->decodedPath());
+        return $this->isRecording() && config('monitor.recording.http.enabled') && Filters::isApprovedRequest($ignoredUrls, $request->decodedPath());
     }
 
     /**
@@ -50,10 +50,45 @@ class Monitor extends \DailyDesk\Monitor\Monitor
      */
     public function shouldRecordCommand($command): bool
     {
-        if (config('monitor.recording.console.enabled') && \is_string($command)) {
+        if ($this->isRecording() && config('monitor.recording.console.enabled') && \is_string($command)) {
             return Filters::isApprovedArtisanCommand($command, config('monitor.recording.console.ignored_commands'));
         }
 
         return false;
     }
+
+    public function shouldRecordDatabaseQuery(): bool
+    {
+        return $this->isRecording() && config('monitor.recording.database.query');
+    }
+
+    public function shouldRecordDatabaseBindings(): bool
+    {
+        return $this->isRecording() && config('monitor.recording.database.bindings');
+    }
+
+    public function shouldRecordHttpClient(): bool
+    {
+        return $this->isRecording() &&
+            config('monitor.recording.http_client.enabled', true) &&
+            \class_exists('\Illuminate\Http\Client\Events\RequestSending') &&
+            \class_exists('\Illuminate\Http\Client\Events\ResponseReceived');
+    }
+
+    public function shouldRecordHttpClientBody(): bool
+    {
+        return $this->isRecording() && config('monitor.recording.http_client.body', true);
+    }
+
+    public function shouldRecordMail(): bool
+    {
+        return $this->isRecording() && config('monitor.recording.mail.enabled', true);
+    }
+
+    public function shouldRecordNotification(): bool
+    {
+        return $this->isRecording() && config('monitor.recording.notification.enabled', true);
+    }
+
+
 }

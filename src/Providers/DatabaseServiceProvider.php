@@ -17,6 +17,9 @@ class DatabaseServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (! Monitor::shouldRecordDatabaseQuery()) {
+            return;
+        }
         $this->app['events']->listen(QueryExecuted::class, function (QueryExecuted $query) {
             if (Monitor::canAddSegments() && $query->sql) {
                 $this->handleQueryReport($query->sql, $query->bindings, $query->time, $query->connectionName);
@@ -42,7 +45,7 @@ class DatabaseServiceProvider extends ServiceProvider
             'query' => $sql,
         ];
 
-        if (config('monitor.bindings')) {
+        if (Monitor::shouldRecordDatabaseBindings()) {
             $context['bindings'] = $bindings;
         }
 
