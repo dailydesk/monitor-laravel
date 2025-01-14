@@ -87,6 +87,7 @@ return [
                  'vendor:publish',
                  'list',
                  'test',
+                 'make:*',
                  'migrate',
                  'migrate:rollback',
                  'migrate:refresh',
@@ -146,14 +147,6 @@ return [
 
          ],
 
-         'queue' => [
-             'enabled' => env('MONITOR_QUEUE', true),
-
-             'ignored_jobs' => [
-                 // \App\Jobs\IgnoredAction::class,
-             ],
-         ],
-
          'mail' => [
              'enabled' => env('MONITOR_MAIL', true),
          ],
@@ -161,8 +154,17 @@ return [
          'notification' => [
              'enabled' => env('MONITOR_NOTIFICATION', true),
          ],
-
      ],
+
+    'queue' => [
+
+        'enabled' => env('MONITOR_QUEUE', true),
+
+        'ignored_jobs' => [
+            // \App\Jobs\IgnoredAction::class,
+        ],
+
+    ],
 
     // TODO: Remove the following lines.
 

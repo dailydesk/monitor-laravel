@@ -1,9 +1,9 @@
 <?php
 
-
 namespace DailyDesk\Monitor\Laravel\Providers;
 
-
+use DailyDesk\Monitor\Laravel\Facades\Monitor;
+use DailyDesk\Monitor\Laravel\Filters;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
@@ -11,7 +11,6 @@ use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Queue\Events\JobReleasedAfterException;
 use Illuminate\Support\ServiceProvider;
-use DailyDesk\Monitor\Laravel\Facades\Monitor;
 use Inspector\Models\Segment;
 
 class QueueServiceProvider extends ServiceProvider
@@ -40,12 +39,11 @@ class QueueServiceProvider extends ServiceProvider
         $this->app['events']->listen(
             JobProcessing::class,
             function (JobProcessing $event) {
-                // TODO: Monitor::isEnabled() && !Monitor::isRecording()
                 if (config('monitor.enabled') && !Monitor::isRecording()) {
                     Monitor::startRecording();
                 }
 
-                if (Monitor::shouldRecordJob($event->job->resolveName())) {
+                if ($this->shouldBeMonitored($event->job->resolveName())) {
                     $this->handleJobStart($event->job);
                 }
             }
@@ -64,7 +62,7 @@ class QueueServiceProvider extends ServiceProvider
         $this->app['events']->listen(
             JobProcessed::class,
             function ($event) {
-                if (Monitor::shouldRecordJob($event->job->resolveName()) && Monitor::isRecording()) {
+                if ($this->shouldBeMonitored($event->job->resolveName()) && Monitor::isRecording()) {
                     $this->handleJobEnd($event->job);
                 }
             }
@@ -74,7 +72,7 @@ class QueueServiceProvider extends ServiceProvider
             $this->app['events']->listen(
                 JobReleasedAfterException::class,
                 function (JobReleasedAfterException $event) {
-                    if (Monitor::shouldRecordJob($event->job->resolveName()) && Monitor::isRecording()) {
+                    if ($this->shouldBeMonitored($event->job->resolveName()) && Monitor::isRecording()) {
                         $this->handleJobEnd($event->job, true);
 
                         // Laravel throws the current exception after raising the failed events.
@@ -92,7 +90,7 @@ class QueueServiceProvider extends ServiceProvider
         $this->app['events']->listen(
             JobFailed::class,
             function (JobFailed $event) {
-                if (Monitor::shouldRecordJob($event->job->resolveName()) && Monitor::isRecording()) {
+                if ($this->shouldBeMonitored($event->job->resolveName()) && Monitor::isRecording()) {
                     // JobExceptionOccurred event is called after JobFailed, so we have to report the exception here.
                     Monitor::reportException($event->exception, false);
 
@@ -120,10 +118,8 @@ class QueueServiceProvider extends ServiceProvider
         if (Monitor::needTransaction()) {
             Monitor::startTransaction($job->resolveName())
                 ->setType('job')
-                ->addContext('payload', $job->payload());
-        }
-
-        if (Monitor::canAddSegments()) {
+                ->addContext('Payload', $job->payload());
+        } elseif (Monitor::canAddSegments()) {
             $this->initializeSegment($job);
         }
     }
@@ -136,7 +132,7 @@ class QueueServiceProvider extends ServiceProvider
     protected function initializeSegment(Job $job)
     {
         $segment = Monitor::startSegment('job', $job->resolveName())
-            ->addContext('payload', $job->payload());
+            ->addContext('Payload', $job->payload());
 
         // Save the job under a unique ID
         $this->segments[$this->getJobId($job)] = $segment;
@@ -154,12 +150,9 @@ class QueueServiceProvider extends ServiceProvider
 
         if (\array_key_exists($id, $this->segments)) {
             $this->segments[$id]->end();
-        }
-
-        if ($transaction = Monitor::transaction()) {
-            if ($transaction->type === 'job' && $transaction->name === $job->resolveName()) {
-                $transaction->setResult($failed ? 'failed' : 'success');
-            }
+        } else {
+            Monitor::transaction()
+                ->setResult($failed ? 'failed' : 'success');
         }
 
         /*
@@ -177,7 +170,7 @@ class QueueServiceProvider extends ServiceProvider
      * Get the job ID.
      *
      * @param Job $job
-     * @return string|int
+     * @return string
      */
     public static function getJobId(Job $job)
     {
@@ -186,5 +179,16 @@ class QueueServiceProvider extends ServiceProvider
         }
 
         return \sha1($job->getRawBody());
+    }
+
+    /**
+     * Determine if the given job needs to be monitored.
+     *
+     * @param string $job
+     * @return bool
+     */
+    protected function shouldBeMonitored(string $job): bool
+    {
+        return Filters::isApprovedJobClass($job, config('monitor.queue.ignored_jobs'));
     }
 }

@@ -80,13 +80,6 @@ class Monitor extends \DailyDesk\Monitor\Monitor
         return $this->isRecording() && config('monitor.recording.http_client.body', true);
     }
 
-    public function shouldRecordJob(string $job): bool
-    {
-        return $this->isRecording() &&
-            config('monitor.recording.queue.enabled', true) &&
-            Filters::isApprovedJobClass($job, config('monitor.recording.queue.ignored_jobs', []));
-    }
-
     public function shouldRecordMail(): bool
     {
         return $this->isRecording() && config('monitor.recording.mail.enabled', true);
