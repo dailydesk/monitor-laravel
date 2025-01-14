@@ -1,8 +1,6 @@
 <?php
 
-
 namespace DailyDesk\Monitor\Laravel\Providers;
-
 
 use DailyDesk\Monitor\Laravel\Facades\Monitor;
 use Illuminate\Http\Client\Events\RequestSending;

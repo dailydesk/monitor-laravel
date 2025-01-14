@@ -4,11 +4,11 @@ namespace DailyDesk\Monitor\Laravel\Providers;
 
 use DailyDesk\Monitor\Laravel\Facades\Monitor;
 use DailyDesk\Monitor\Laravel\Filters;
+use Illuminate\Contracts\Queue\Job;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
-use Illuminate\Contracts\Queue\Job;
 use Illuminate\Queue\Events\JobReleasedAfterException;
 use Illuminate\Support\ServiceProvider;
 use Inspector\Models\Segment;
@@ -43,7 +43,7 @@ class QueueServiceProvider extends ServiceProvider
         $this->app['events']->listen(
             JobProcessing::class,
             function (JobProcessing $event) {
-                if (config('monitor.enabled') && !Monitor::isRecording()) {
+                if (config('monitor.enabled') && ! Monitor::isRecording()) {
                     Monitor::startRecording();
                 }
 

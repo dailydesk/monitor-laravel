@@ -2,12 +2,12 @@
 
 namespace DailyDesk\Monitor\Laravel\Providers;
 
+use DailyDesk\Monitor\Laravel\Facades\Monitor;
 use Illuminate\Console\Events\ArtisanStarting;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\ServiceProvider;
-use DailyDesk\Monitor\Laravel\Facades\Monitor;
 
 class ConsoleServiceProvider extends ServiceProvider
 {
@@ -27,8 +27,9 @@ class ConsoleServiceProvider extends ServiceProvider
         });
 
         $this->app['events']->listen(CommandStarting::class, function (CommandStarting $event) {
-            if (!Monitor::shouldRecordCommand($event->command)) {
+            if (! Monitor::shouldRecordCommand($event->command)) {
                 Monitor::stopRecording();
+
                 return;
             }
 
@@ -42,8 +43,9 @@ class ConsoleServiceProvider extends ServiceProvider
         });
 
         $this->app['events']->listen(CommandFinished::class, function (CommandFinished $event) {
-            if (!Monitor::shouldRecordCommand($event->command)) {
+            if (! Monitor::shouldRecordCommand($event->command)) {
                 Monitor::stopRecording();
+
                 return;
             }
 

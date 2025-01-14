@@ -31,11 +31,13 @@ class MonitorTestCommand extends Command
             \proc_open("", [], $pipes);
         } catch (\Throwable $exception) {
             $this->warn("❌ proc_open function disabled.");
+
             return;
         }
 
-        if (!monitor()->canAddSegments()) {
+        if (! monitor()->canAddSegments()) {
             $this->warn('Monitor is not enabled');
+
             return;
         }
 
@@ -43,7 +45,7 @@ class MonitorTestCommand extends Command
         monitor()->addSegment(function (Segment $segment) use ($config) {
             \usleep(10 * 1000);
 
-            !empty($config->get('monitor.key'))
+            ! empty($config->get('monitor.key'))
                 ? $this->info('✅ Monitor key installed.')
                 : $this->warn('❌ Monitor key not specified. Make sure you specify ' .
                 'the MONITOR_INGESTION_KEY in your .env file.');

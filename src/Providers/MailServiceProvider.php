@@ -1,13 +1,11 @@
 <?php
 
-
 namespace DailyDesk\Monitor\Laravel\Providers;
 
-
+use DailyDesk\Monitor\Laravel\Facades\Monitor;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Support\ServiceProvider;
-use DailyDesk\Monitor\Laravel\Facades\Monitor;
 use Inspector\Models\Segment;
 
 class MailServiceProvider extends ServiceProvider
@@ -38,7 +36,7 @@ class MailServiceProvider extends ServiceProvider
                     ->addContext(
                         'data',
                         \property_exists($event, 'data')
-                            ? \array_intersect_key($event->data, \array_flip( ['mailer'] ) )
+                            ? \array_intersect_key($event->data, \array_flip(['mailer']))
                             : []
                     );
             }

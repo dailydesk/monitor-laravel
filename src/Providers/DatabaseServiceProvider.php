@@ -1,12 +1,10 @@
 <?php
 
-
 namespace DailyDesk\Monitor\Laravel\Providers;
 
-
+use DailyDesk\Monitor\Laravel\Facades\Monitor;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\ServiceProvider;
-use DailyDesk\Monitor\Laravel\Facades\Monitor;
 
 class DatabaseServiceProvider extends ServiceProvider
 {
@@ -38,7 +36,7 @@ class DatabaseServiceProvider extends ServiceProvider
     protected function handleQueryReport($sql, array $bindings, $time, $connection)
     {
         $segment = Monitor::startSegment($connection, $sql)
-            ->start(\microtime(true) - $time/1000);
+            ->start(\microtime(true) - $time / 1000);
 
         $context = [
             'connection' => $connection,

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace DailyDesk\Monitor\Laravel\Providers;
 
 use DailyDesk\Monitor\Laravel\Facades\Monitor;
@@ -42,7 +41,7 @@ class GateServiceProvider extends ServiceProvider
     public function beforeGateCheck($user, $ability, $arguments)
     {
         if (Monitor::canAddSegments()) {
-            $class = (\is_array($arguments)&&!empty($arguments))
+            $class = (\is_array($arguments) && ! empty($arguments))
                 ? (\is_string($arguments[0]) ? $arguments[0] : '')
                 : '';
 

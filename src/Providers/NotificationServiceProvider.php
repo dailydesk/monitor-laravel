@@ -1,13 +1,11 @@
 <?php
 
-
 namespace DailyDesk\Monitor\Laravel\Providers;
 
-
+use DailyDesk\Monitor\Laravel\Facades\Monitor;
 use Illuminate\Notifications\Events\NotificationSending;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\ServiceProvider;
-use DailyDesk\Monitor\Laravel\Facades\Monitor;
 use Inspector\Models\Segment;
 
 class NotificationServiceProvider extends ServiceProvider

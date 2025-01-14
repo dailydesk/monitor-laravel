@@ -1,8 +1,6 @@
 <?php
 
-
 namespace DailyDesk\Monitor\Laravel;
-
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -36,7 +34,7 @@ class Filters
      */
     public static function isApprovedArtisanCommand(string $command, ?array $notAllowed): bool
     {
-        if(\is_null($notAllowed)) {
+        if (\is_null($notAllowed)) {
             return true;
         }
 
@@ -70,7 +68,7 @@ class Filters
      */
     public static function isApprovedJobClass(string $class, ?array $notAllowed)
     {
-        return !\is_array($notAllowed) || !\in_array($class, $notAllowed);
+        return ! \is_array($notAllowed) || ! \in_array($class, $notAllowed);
     }
 
     /**
