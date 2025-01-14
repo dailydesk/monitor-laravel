@@ -87,6 +87,7 @@ return [
                  'vendor:publish',
                  'list',
                  'test',
+                 'make:*',
                  'migrate',
                  'migrate:rollback',
                  'migrate:refresh',
@@ -120,6 +121,16 @@ return [
              'enabled' => env('MONITOR_EXCEPTION', true)
          ],
 
+         'database' => [
+             'query' => env('MONITOR_DB_QUERY', true),
+             'bindings' => env('MONITOR_DB_BINDINGS', true),
+         ],
+
+         'http_client' => [
+             'enabled' => env('MONITOR_HTTP_CLIENT', true),
+             'body' => env('MONITOR_HTTP_CLIENT_BODY', true),
+         ],
+
          'http' => [
 
              'enabled' => env('MONITOR_REQUEST', true),
@@ -136,16 +147,6 @@ return [
 
          ],
 
-         'database' => [
-             'query' => env('MONITOR_DB_QUERY', true),
-             'bindings' => env('MONITOR_DB_BINDINGS', true),
-         ],
-
-         'http_client' => [
-             'enabled' => env('MONITOR_HTTP_CLIENT', true),
-             'body' => env('MONITOR_HTTP_CLIENT_BODY', true),
-         ],
-
          'mail' => [
              'enabled' => env('MONITOR_MAIL', true),
          ],
@@ -153,12 +154,19 @@ return [
          'notification' => [
              'enabled' => env('MONITOR_NOTIFICATION', true),
          ],
-
      ],
 
+    'queue' => [
+
+        'enabled' => env('MONITOR_QUEUE', true),
+
+        'ignored_jobs' => [
+            // \App\Jobs\IgnoredAction::class,
+        ],
+
+    ],
+
     // TODO: Remove the following lines.
-
-
 
     /*
     |--------------------------------------------------------------------------
@@ -170,17 +178,6 @@ return [
     */
 
     'views' => env('MONITOR_VIEWS', true),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Job
-    |--------------------------------------------------------------------------
-    |
-    | Enable this if you'd like us to monitor background job processing.
-    |
-    */
-
-    'job' => env('MONITOR_JOB', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -216,19 +213,5 @@ return [
     'hidden_parameters' => [
         'password',
         'password_confirmation'
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Job classes to ignore
-    |--------------------------------------------------------------------------
-    |
-    | Add at this list the job classes that you don't want monitoring
-    | in your Inspector dashboard.
-    |
-    */
-
-    'ignored_jobs' => [
-        //\App\Jobs\MyJob::class
     ],
 ];

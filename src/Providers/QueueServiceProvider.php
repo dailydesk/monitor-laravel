@@ -1,9 +1,9 @@
 <?php
 
-
 namespace DailyDesk\Monitor\Laravel\Providers;
 
-
+use DailyDesk\Monitor\Laravel\Facades\Monitor;
+use DailyDesk\Monitor\Laravel\Filters;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
@@ -11,11 +11,9 @@ use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Queue\Events\JobReleasedAfterException;
 use Illuminate\Support\ServiceProvider;
-use DailyDesk\Monitor\Laravel\Facades\Monitor;
-use DailyDesk\Monitor\Laravel\Filters;
 use Inspector\Models\Segment;
 
-class JobServiceProvider extends ServiceProvider
+class QueueServiceProvider extends ServiceProvider
 {
     /**
      * Jobs to inspect.
@@ -34,7 +32,7 @@ class JobServiceProvider extends ServiceProvider
         // This event is never called in Laravel Vapor.
         /*Queue::looping(
             function () {
-                $this->app['inspector']->flush();
+                $this->app['monitor']->flush();
             }
         );*/
 
@@ -172,7 +170,7 @@ class JobServiceProvider extends ServiceProvider
      * Get the job ID.
      *
      * @param Job $job
-     * @return string|int
+     * @return string
      */
     public static function getJobId(Job $job)
     {
@@ -184,16 +182,6 @@ class JobServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
-    }
-
-    /**
      * Determine if the given job needs to be monitored.
      *
      * @param string $job
@@ -201,6 +189,6 @@ class JobServiceProvider extends ServiceProvider
      */
     protected function shouldBeMonitored(string $job): bool
     {
-        return Filters::isApprovedJobClass($job, config('monitor.ignored_jobs'));
+        return Filters::isApprovedJobClass($job, config('monitor.queue.ignored_jobs'));
     }
 }

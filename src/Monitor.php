@@ -89,6 +89,4 @@ class Monitor extends \DailyDesk\Monitor\Monitor
     {
         return $this->isRecording() && config('monitor.recording.notification.enabled', true);
     }
-
-
 }
