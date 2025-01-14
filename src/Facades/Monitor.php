@@ -21,17 +21,9 @@ use Inspector\Models\Transaction;
  * @method static Error reportException(\Throwable $exception, $handled = true)
  * @method static void flush()
  * @method static void beforeFlush(callable $callback)
- * @method static Transaction start()
- * @method static Error report(\Throwable $e, $handled = false)
- * @method static bool shouldRecordRequest(\Illuminate\Http\Request $request)
  * @method static bool shouldRecordCommand(?string $command)
  * @method static bool shouldRecordException(\Throwable $e)
- * @method static bool shouldRecordDatabaseQuery()
- * @method static bool shouldRecordDatabaseBindings()
- * @method static bool shouldRecordHttpClient()
- * @method static bool shouldRecordHttpClientBody()
- * @method static bool shouldRecordMail()
- * @method static bool shouldRecordNotification()
+ * @method static bool shouldRecordRequest(\Illuminate\Http\Request $request)
  */
 class Monitor extends Facade
 {

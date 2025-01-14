@@ -26,7 +26,7 @@ class NotificationServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (! Monitor::shouldRecordNotification()) {
+        if (! config('monitor.notification.enabled')) {
             return;
         }
 

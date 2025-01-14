@@ -25,68 +25,24 @@ class Monitor extends \DailyDesk\Monitor\Monitor
         }, 'method', $label, true);
     }
 
-    /**
-     * @return bool
-     */
-    public function shouldRecordException(Throwable $e): bool
+    public function shouldRecordCommand(?string $command): bool
     {
-        return $this->isRecording() && config('monitor.recording.exception.enabled');
-    }
-
-    /**
-     * @param \Illuminate\Http\Request $request
-     * @return bool
-     */
-    public function shouldRecordRequest($request): bool
-    {
-        $ignoredUrls = config('monitor.recording.http.ignored_urls');
-
-        return $this->isRecording() && config('monitor.recording.http.enabled') && Filters::isApprovedRequest($ignoredUrls, $request->decodedPath());
-    }
-
-    /**
-     * @param string|null $command
-     * @return bool
-     */
-    public function shouldRecordCommand($command): bool
-    {
-        if ($this->isRecording() && config('monitor.recording.console.enabled') && \is_string($command)) {
-            return Filters::isApprovedArtisanCommand($command, config('monitor.recording.console.ignored_commands'));
+        if (is_string($command)) {
+            return Filters::isApprovedArtisanCommand($command, config('monitor.console.ignored_commands'));
         }
 
         return false;
     }
 
-    public function shouldRecordDatabaseQuery(): bool
+    public function shouldRecordException(Throwable $e): bool
     {
-        return $this->isRecording() && config('monitor.recording.database.query');
+        return true;
     }
 
-    public function shouldRecordDatabaseBindings(): bool
+    public function shouldRecordRequest($request): bool
     {
-        return $this->isRecording() && config('monitor.recording.database.bindings');
-    }
+        $ignoredUrls = config('monitor.http.ignored_urls');
 
-    public function shouldRecordHttpClient(): bool
-    {
-        return $this->isRecording() &&
-            config('monitor.recording.http_client.enabled', true) &&
-            \class_exists('\Illuminate\Http\Client\Events\RequestSending') &&
-            \class_exists('\Illuminate\Http\Client\Events\ResponseReceived');
-    }
-
-    public function shouldRecordHttpClientBody(): bool
-    {
-        return $this->isRecording() && config('monitor.recording.http_client.body', true);
-    }
-
-    public function shouldRecordMail(): bool
-    {
-        return $this->isRecording() && config('monitor.recording.mail.enabled', true);
-    }
-
-    public function shouldRecordNotification(): bool
-    {
-        return $this->isRecording() && config('monitor.recording.notification.enabled', true);
+        return config('monitor.http.enabled') && Filters::isApprovedRequest($ignoredUrls, $request->decodedPath());
     }
 }

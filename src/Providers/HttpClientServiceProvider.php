@@ -27,7 +27,9 @@ class HttpClientServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (! Monitor::shouldRecordHttpClient()) {
+        if (! (config('monitor.http_client.enabled') &&
+            \class_exists('\Illuminate\Http\Client\Events\RequestSending') &&
+            \class_exists('\Illuminate\Http\Client\Events\ResponseReceived'))) {
             return;
         }
 
@@ -35,7 +37,7 @@ class HttpClientServiceProvider extends ServiceProvider
             if (Monitor::canAddSegments()) {
                 $this->segments[
                 $this->getSegmentKey($event->request)
-                ] = Monitor::startSegment('http', $event->request->url());
+                ] = Monitor::startSegment('http_client', $event->request->url());
             }
         });
 
@@ -51,11 +53,9 @@ class HttpClientServiceProvider extends ServiceProvider
 
             if (\array_key_exists($key, $this->segments)) {
                 $this->segments[$key]->end()
-                    ->addContext('common', [
+                    ->addContext('request', [
                         'method' => $event->request->method(),
                         'url' => $event->request->url(),
-                    ])
-                    ->addContext('request', [
                         'type' => $type,
                         'headers' => $event->request->headers(),
                         'data' => $event->request->data(),

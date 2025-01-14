@@ -17,7 +17,7 @@ class DatabaseServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (! Monitor::shouldRecordDatabaseQuery()) {
+        if (! config('monitor.database.enabled')) {
             return;
         }
         $this->app['events']->listen(QueryExecuted::class, function (QueryExecuted $query) {
@@ -45,20 +45,10 @@ class DatabaseServiceProvider extends ServiceProvider
             'query' => $sql,
         ];
 
-        if (Monitor::shouldRecordDatabaseBindings()) {
+        if (config('monitor.database.bindings')) {
             $context['bindings'] = $bindings;
         }
 
         $segment->addContext('db', $context)->end($time);
-    }
-
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
     }
 }

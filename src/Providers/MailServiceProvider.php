@@ -26,10 +26,9 @@ class MailServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (! Monitor::shouldRecordMail()) {
+        if (! config('monitor.mail.enabled')) {
             return;
         }
-
         $this->app['events']->listen(MessageSending::class, function (MessageSending $event) {
             if (Monitor::canAddSegments()) {
                 $this->segments[

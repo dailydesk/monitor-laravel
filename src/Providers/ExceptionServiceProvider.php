@@ -11,20 +11,16 @@ class ExceptionServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        if (! config('monitor.exception.enabled')) {
+            return;
+        }
+
         $handler = $this->app->make(ExceptionHandler::class);
 
         $handler->reportable(function (Throwable $e) {
-            if (! Monitor::shouldRecordException($e)) {
-                return;
+            if (Monitor::shouldRecordException($e)) {
+                Monitor::reportException($e, false);
             }
-
-            if (Monitor::needTransaction()) {
-                Monitor::start();
-            }
-
-            Monitor::transaction()->setResult('error');
-
-            Monitor::report($e);
         });
     }
 }

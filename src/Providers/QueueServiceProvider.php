@@ -29,6 +29,10 @@ class QueueServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (! config('monitor.queue.enabled')) {
+            return;
+        }
+
         // This event is never called in Laravel Vapor.
         /*Queue::looping(
             function () {

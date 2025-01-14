@@ -24,7 +24,7 @@ return [
     |
     */
 
-    'key' => env('MONITOR_API_KEY', env('MONITOR_INGESTION_KEY')),
+    'key' => env('MONITOR_INGESTION_KEY'),
 
     /*
     |--------------------------------------------------------------------------
@@ -32,7 +32,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'url' => env('MONITOR_URL', 'https://monitor.dailydesk.app'),
+    'url' => env('MONITOR_URL'),
 
     /*
     |--------------------------------------------------------------------------
@@ -43,7 +43,7 @@ return [
     |
     */
 
-    'transport' => env('MONITOR_TRANSPORT', 'async'),
+    'transport' => env('MONITOR_TRANSPORT', 'sync'),
 
     /*
     |--------------------------------------------------------------------------
@@ -71,90 +71,88 @@ return [
         // 'curlPath' => '/opt/bin/curl',
     ],
 
-     'recording' => [
+    'console' => [
+        'enabled' => env('MONITOR_CONSOLE', true),
+        'ignored_commands' => [
+            'storage:link',
+            'optimize',
+            'optimize:clear',
+            'schedule:run',
+            'schedule:finish',
+            'package:discover',
+            'vendor:publish',
+            'list',
+            'test',
+            'make:*',
+            'migrate',
+            'migrate:rollback',
+            'migrate:refresh',
+            'migrate:fresh',
+            'migrate:reset',
+            'migrate:install',
+            'db:seed',
+            'cache:clear',
+            'config:cache',
+            'config:clear',
+            'route:cache',
+            'route:clear',
+            'view:cache',
+            'view:clear',
+            'queue:listen',
+            'queue:work',
+            'queue:restart',
+            'vapor:work',
+            'vapor:health-check',
+            'horizon',
+            'horizon:work',
+            'horizon:supervisor',
+            'horizon:terminate',
+            'horizon:snapshot',
+            'nova:publish',
+        ],
+    ],
 
-         'console' => [
+    'database' => [
+        'query' => env('MONITOR_DB_QUERY', true),
+        'bindings' => env('MONITOR_DB_BINDINGS', true),
+    ],
 
-             'enabled' => env('MONITOR_COMMAND', true),
+    'exception' => [
+        //
+    ],
 
-             'ignored_commands' => [
-                 'storage:link',
-                 'optimize',
-                 'optimize:clear',
-                 'schedule:run',
-                 'schedule:finish',
-                 'package:discover',
-                 'vendor:publish',
-                 'list',
-                 'test',
-                 'make:*',
-                 'migrate',
-                 'migrate:rollback',
-                 'migrate:refresh',
-                 'migrate:fresh',
-                 'migrate:reset',
-                 'migrate:install',
-                 'db:seed',
-                 'cache:clear',
-                 'config:cache',
-                 'config:clear',
-                 'route:cache',
-                 'route:clear',
-                 'view:cache',
-                 'view:clear',
-                 'queue:listen',
-                 'queue:work',
-                 'queue:restart',
-                 'vapor:work',
-                 'vapor:health-check',
-                 'horizon',
-                 'horizon:work',
-                 'horizon:supervisor',
-                 'horizon:terminate',
-                 'horizon:snapshot',
-                 'nova:publish',
-             ],
+    'gate' => [
+        //
+    ],
 
-         ],
+    'http_client' => [
+        'enabled' => env('MONITOR_HTTP_CLIENT', true),
+        'body' => env('MONITOR_HTTP_CLIENT_BODY', true),
+    ],
 
-         'exception' => [
-             'enabled' => env('MONITOR_EXCEPTION', true)
-         ],
+    'http' => [
 
-         'database' => [
-             'query' => env('MONITOR_DB_QUERY', true),
-             'bindings' => env('MONITOR_DB_BINDINGS', true),
-         ],
+        'enabled' => env('MONITOR_REQUEST', true),
 
-         'http_client' => [
-             'enabled' => env('MONITOR_HTTP_CLIENT', true),
-             'body' => env('MONITOR_HTTP_CLIENT_BODY', true),
-         ],
+        'user' => env('MONITOR_USER', true),
 
-         'http' => [
+        'ignored_urls' => [
+            'telescope*',
+            'vendor/telescope*',
+            'horizon*',
+            'vendor/horizon*',
+            'nova*'
+        ],
 
-             'enabled' => env('MONITOR_REQUEST', true),
+    ],
 
-             'user' => env('MONITOR_USER', true),
+    'mail' => [
+        'enabled' => env('MONITOR_MAIL', true),
+    ],
 
-             'ignored_urls' => [
-                 'telescope*',
-                 'vendor/telescope*',
-                 'horizon*',
-                 'vendor/horizon*',
-                 'nova*'
-             ],
-
-         ],
-
-         'mail' => [
-             'enabled' => env('MONITOR_MAIL', true),
-         ],
-
-         'notification' => [
-             'enabled' => env('MONITOR_NOTIFICATION', true),
-         ],
-     ],
+    'notification' => [
+        'enabled' => env('MONITOR_NOTIFICATION', true),
+    ],
 
     'queue' => [
 
@@ -166,7 +164,7 @@ return [
 
     ],
 
-    // TODO: Remove the following lines.
+    // TODO: Review the following lines.
 
     /*
     |--------------------------------------------------------------------------

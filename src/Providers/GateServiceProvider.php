@@ -24,6 +24,10 @@ class GateServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (! config('monitor.gate.enabled')) {
+            return;
+        }
+
         Gate::before([$this, 'beforeGateCheck']);
         Gate::after([$this, 'afterGateCheck']);
     }

@@ -10,7 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "dailydesk/monitor-php": "^0.2",
+        "dailydesk/monitor-php": "^0.3.1",
         "illuminate/console": "^11",
         "illuminate/contracts": "^11",
         "illuminate/http": "^11",

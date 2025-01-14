@@ -12,6 +12,10 @@ class HttpServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        if ($this->app->runningInConsole() || ! config('monitor.http.enabled')) {
+            return;
+        }
+
         $this->app->booted(function ($app) {
             /** @var \Illuminate\Foundation\Http\Kernel $kernel */
             $kernel = $app[HttpKernel::class];
@@ -44,7 +48,7 @@ class HttpServiceProvider extends ServiceProvider
                     $transaction->name = $request->method() . ' ' . '/' . trim($uri, '/');
                 }
 
-                if (config('monitor.recording.http.user') && ($user = $request->user()) instanceof Authenticatable) {
+                if (config('monitor.http.user') && ($user = $request->user()) instanceof Authenticatable) {
                     $transaction->withUser($user->getAuthIdentifier());
                 }
 
