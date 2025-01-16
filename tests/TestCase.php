@@ -2,10 +2,10 @@
 
 namespace Tests\DailyDesk\Monitor\Laravel;
 
+use DailyDesk\Monitor\Laravel\MonitorServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;
-use DailyDesk\Monitor\Laravel\MonitorServiceProvider;
 
 class TestCase extends Orchestra
 {

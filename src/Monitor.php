@@ -25,20 +25,27 @@ class Monitor extends \DailyDesk\Monitor\Monitor
         }, 'method', $label, true);
     }
 
-    public function shouldRecordCommand(?string $command): bool
+    /**
+     * Determine if the given command should be recorded.
+     */
+    public function shouldRecordCommand(string $command): bool
     {
-        if (is_string($command)) {
-            return Filters::isApprovedArtisanCommand($command, config('monitor.console.ignored_commands'));
-        }
-
-        return false;
+        return Filters::isApprovedArtisanCommand($command, config('monitor.console.ignored_commands'));
     }
 
+    /**
+     * Determine if the given exception should be recorded.
+     */
     public function shouldRecordException(Throwable $e): bool
     {
         return true;
     }
 
+    /**
+     * Determine if the given request should be recorded.
+     *
+     * @param  \Illuminate\Http\Request $request
+     */
     public function shouldRecordRequest($request): bool
     {
         $ignoredUrls = config('monitor.http.ignored_urls');

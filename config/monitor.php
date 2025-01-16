@@ -24,52 +24,7 @@ return [
     |
     */
 
-    'key' => env('MONITOR_INGESTION_KEY'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Monitor URL
-    |--------------------------------------------------------------------------
-    */
-
-    'url' => env('MONITOR_URL', 'https://monitor.dailydesk.app'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Monitor Transport Method
-    |--------------------------------------------------------------------------
-    |
-    | Supported: "async" or "sync"
-    |
-    */
-
-    'transport' => env('MONITOR_TRANSPORT', 'sync'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Monitor Max Items.
-    |--------------------------------------------------------------------------
-    |
-    | Max number of items to record in a single execution cycle.
-    |
-    */
-
-    'max_items' => env('MONITOR_MAX_ITEMS', 100),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Monitor Transport Options
-    |--------------------------------------------------------------------------
-    |
-    | Use these options to customize the way monitor clients communicate with
-    | the Monitor service
-    |
-    */
-
-    'options' => [
-        // 'proxy' => 'https://55.88.22.11:3128',
-        // 'curlPath' => '/opt/bin/curl',
-    ],
+    'key' => env('MONITOR_KEY'),
 
     'console' => [
         'enabled' => env('MONITOR_CONSOLE', true),
@@ -141,7 +96,12 @@ return [
             'vendor/telescope*',
             'horizon*',
             'vendor/horizon*',
-            'nova*'
+            'nova*',
+        ],
+
+        'hidden_parameters' => [
+            'password',
+            'password_confirmation',
         ],
 
     ],
@@ -162,54 +122,5 @@ return [
             // \App\Jobs\IgnoredAction::class,
         ],
 
-    ],
-
-    // TODO: Review the following lines.
-
-    /*
-    |--------------------------------------------------------------------------
-    | View
-    |--------------------------------------------------------------------------
-    |
-    | Enable this if you'd like us to monitor background job processing.
-    |
-    */
-
-    'views' => env('MONITOR_VIEWS', true),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Job
-    |--------------------------------------------------------------------------
-    |
-    | Enable this if you'd like us to monitor background job processing.
-    |
-    */
-
-    'redis' => env('MONITOR_REDIS', true),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Exceptions
-    |--------------------------------------------------------------------------
-    |
-    | Enable this if you'd like us to report unhandled exceptions.
-    |
-    */
-
-    'unhandled_exceptions' => env('MONITOR_UNHANDLED_EXCEPTIONS', true),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Hide sensible data from http requests
-    |--------------------------------------------------------------------------
-    |
-    | List request fields that you want mask from the http payload.
-    | You can specify nested fields using the dot notation: "user.password"
-    */
-
-    'hidden_parameters' => [
-        'password',
-        'password_confirmation'
     ],
 ];

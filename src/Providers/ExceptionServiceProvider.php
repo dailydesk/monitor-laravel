@@ -19,7 +19,7 @@ class ExceptionServiceProvider extends ServiceProvider
 
         $handler->reportable(function (Throwable $e) {
             if (Monitor::shouldRecordException($e)) {
-                Monitor::reportException($e, false);
+                Monitor::report($e);
             }
         });
     }

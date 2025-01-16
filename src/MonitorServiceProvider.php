@@ -19,35 +19,19 @@ class MonitorServiceProvider extends AggregateServiceProvider
         Providers\QueueServiceProvider::class,
     ];
 
-    public function register()
+    public function register(): void
     {
-        // Default package configuration
         $this->mergeConfigFrom(__DIR__ . '/../config/monitor.php', 'monitor');
 
-        // Bind Monitor service class
-        $this->app->singleton('monitor', function ($app) {
-            $config = $app->make('config');
-
-            $configuration = (new \Inspector\Configuration($config->get('monitor.key')))
-                ->setEnabled($config->get('monitor.enabled', true))
-                ->setUrl($config->get('monitor.url', 'https://monitor.dailydesk.app'))
-                ->setVersion(Monitor::VERSION)
-                ->setTransport($config->get('monitor.transport', 'sync'))
-                ->setOptions($config->get('monitor.options', []))
-                ->setMaxItems($config->get('monitor.max_items', 100));
-
-            return new Monitor($configuration);
-        });
+        $this->app->singleton('monitor', Monitor::class);
 
         parent::register();
     }
 
     /**
      * Booting of services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         $this->publishes([
             __DIR__ . '/../../config/monitor.php' => $this->app->configPath('monitor.php'),

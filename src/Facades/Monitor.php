@@ -2,10 +2,9 @@
 
 namespace DailyDesk\Monitor\Laravel\Facades;
 
+use DailyDesk\Monitor\Models\Segment;
+use DailyDesk\Monitor\Models\Transaction;
 use Illuminate\Support\Facades\Facade;
-use Inspector\Models\Error;
-use Inspector\Models\Segment;
-use Inspector\Models\Transaction;
 
 /**
  * @method static Transaction startTransaction($name)
@@ -17,11 +16,10 @@ use Inspector\Models\Transaction;
  * @method static \DailyDesk\Monitor\Monitor startRecording()
  * @method static \DailyDesk\Monitor\Monitor stopRecording()
  * @method static Segment startSegment($type, $label)
- * @method static mixed addSegment($callback, $type, $label = null, $throw = false)
- * @method static Error reportException(\Throwable $exception, $handled = true)
+ * @method static Segment addSegment($callback, $type, $label, $throw = false)
+ * @method static Segment report(\Throwable $e, $handled = false)
  * @method static void flush()
- * @method static void beforeFlush(callable $callback)
- * @method static bool shouldRecordCommand(?string $command)
+ * @method static bool shouldRecordCommand(string $command)
  * @method static bool shouldRecordException(\Throwable $e)
  * @method static bool shouldRecordRequest(\Illuminate\Http\Request $request)
  */

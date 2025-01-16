@@ -122,7 +122,7 @@ class QueueServiceProvider extends ServiceProvider
         if (Monitor::needTransaction()) {
             Monitor::startTransaction($job->resolveName())
                 ->setType('job')
-                ->addContext('Payload', $job->payload());
+                ->addContext('payload', $job->payload());
         } elseif (Monitor::canAddSegments()) {
             $this->initializeSegment($job);
         }
@@ -136,7 +136,7 @@ class QueueServiceProvider extends ServiceProvider
     protected function initializeSegment(Job $job)
     {
         $segment = Monitor::startSegment('job', $job->resolveName())
-            ->addContext('Payload', $job->payload());
+            ->addContext('payload', $job->payload());
 
         // Save the job under a unique ID
         $this->segments[$this->getJobId($job)] = $segment;
