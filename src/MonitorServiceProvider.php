@@ -23,7 +23,22 @@ class MonitorServiceProvider extends AggregateServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/monitor.php', 'monitor');
 
-        $this->app->singleton('monitor', Monitor::class);
+        $this->app->singleton('monitor', function () {
+            $enabled = config('monitor.enabled');
+            $key = config('monitor.key');
+
+            if ($enabled && $key) {
+                $monitor = Monitor::create($key, ['url' => config('monitor.url')]);
+                $monitor->startRecording();
+            } else {
+                $monitor = new Monitor;
+                $monitor->stopRecording();
+            }
+
+            return $monitor;
+        });
+
+        $this->app->alias('monitor', Monitor::class);
 
         parent::register();
     }

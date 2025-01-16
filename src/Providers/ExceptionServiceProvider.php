@@ -20,6 +20,10 @@ class ExceptionServiceProvider extends ServiceProvider
         $handler->reportable(function (Throwable $e) {
             if (Monitor::shouldRecordException($e)) {
                 Monitor::report($e);
+
+                if ($this->app->runningInConsole()) {
+                    Monitor::transaction()->setResult('error');
+                }
             }
         });
     }
