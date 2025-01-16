@@ -10,10 +10,8 @@ class DatabaseServiceProvider extends ServiceProvider
 {
     /**
      * Booting of services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         if (! config('monitor.database.enabled')) {
             return;
@@ -43,7 +41,7 @@ class DatabaseServiceProvider extends ServiceProvider
             'query' => $sql,
         ];
 
-        if (config('monitor.database.bindings')) {
+        if (config('monitor.database.query.bindings')) {
             $context['bindings'] = $bindings;
         }
 

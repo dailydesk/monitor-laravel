@@ -26,6 +26,8 @@ return [
 
     'key' => env('MONITOR_KEY'),
 
+    'url' => env('MONITOR_URL'),
+
     'console' => [
         'enabled' => env('MONITOR_CONSOLE', true),
         'ignored_commands' => [
@@ -68,16 +70,19 @@ return [
     ],
 
     'database' => [
-        'query' => env('MONITOR_DB_QUERY', true),
-        'bindings' => env('MONITOR_DB_BINDINGS', true),
+        'enabled' => env('MONITOR_DB_QUERY', true),
+
+        'query' => [
+            'bindings' => env('MONITOR_DB_BINDINGS', true),
+        ],
     ],
 
     'exception' => [
-        //
+        'enabled' => env('MONITOR_EXCEPTION', true),
     ],
 
     'gate' => [
-        //
+        'enabled' => env('MONITOR_GATE', true),
     ],
 
     'http_client' => [
