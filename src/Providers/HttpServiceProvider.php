@@ -3,6 +3,7 @@
 namespace DailyDesk\Monitor\Laravel\Providers;
 
 use DailyDesk\Monitor\Laravel\Facades\Monitor;
+use DailyDesk\Monitor\Laravel\Filters;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Http\Kernel as HttpKernel;
 use Illuminate\Foundation\Http\Events\RequestHandled;
@@ -30,6 +31,11 @@ class HttpServiceProvider extends ServiceProvider
                     $transaction = Monitor::startTransaction(
                         $request->method() . ' ' . '/' . trim($uri, '/')
                     )->markAsRequest();
+
+                    $transaction->addContext(
+                        'request_body',
+                        Filters::hideParameters($request->all(), config('monitor.http.hidden_parameters'))
+                    );
 
                     $transaction->timestamp = (float) $startedAt->format('U.u');
                 }
