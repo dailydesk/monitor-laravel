@@ -13,28 +13,22 @@ class DatabaseServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (! config('monitor.database.enabled')) {
-            return;
+        if (config('monitor.database.enabled')) {
+            $this->app['events']->listen(QueryExecuted::class, function (QueryExecuted $query) {
+                if (Monitor::canAddSegments() && $query->sql) {
+                    $this->handleQueryReport($query->sql, $query->bindings, $query->time, $query->connectionName);
+                }
+            });
         }
-        $this->app['events']->listen(QueryExecuted::class, function (QueryExecuted $query) {
-            if (Monitor::canAddSegments() && $query->sql) {
-                $this->handleQueryReport($query->sql, $query->bindings, $query->time, $query->connectionName);
-            }
-        });
     }
 
     /**
      * Attach a span to monitor query execution.
-     *
-     * @param $sql
-     * @param array $bindings
-     * @param $time
-     * @param $connection
      */
-    protected function handleQueryReport($sql, array $bindings, $time, $connection)
+    protected function handleQueryReport(string $sql, array $bindings, float $time, string $connection): void
     {
         $segment = Monitor::startSegment($connection, $sql)
-            ->start(\microtime(true) - $time / 1000);
+            ->start(microtime(true) - $time / 1000);
 
         $context = [
             'connection' => $connection,

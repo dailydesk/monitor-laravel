@@ -31,7 +31,7 @@ class MonitorServiceProvider extends AggregateServiceProvider
                 $monitor = Monitor::create($key, ['url' => config('monitor.url')]);
                 $monitor->startRecording();
             } else {
-                $monitor = new Monitor;
+                $monitor = new Monitor();
                 $monitor->stopRecording();
             }
 

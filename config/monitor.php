@@ -1,12 +1,13 @@
 <?php
 
 return [
+
     /*
     |--------------------------------------------------------------------------
     | Monitor Enabled Mode
     |--------------------------------------------------------------------------
     |
-    | Determine if monitor clients should sending data to the Monitor service.
+    | Determine if clients should send data to the Monitor platform.
     |
     */
 
@@ -17,19 +18,30 @@ return [
     | Monitor Ingestion Key
     |--------------------------------------------------------------------------
     |
-    | This key is for the Monitor service to detect which application should be
+    | This key is for the Monitor platform to detect which service should be
     | picked when recording data.
     |
-    | You can find this key on your application settings page.
+    | You can find this key on your service settings page.
     |
     */
 
     'key' => env('MONITOR_KEY'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Monitor URL
+    |--------------------------------------------------------------------------
+    |
+    | The ingestion base URL of the Monitor platform
+    |
+    */
+
     'url' => env('MONITOR_URL'),
 
     'console' => [
+
         'enabled' => env('MONITOR_CONSOLE', true),
+
         'ignored_commands' => [
             'storage:link',
             'optimize',
@@ -67,27 +79,37 @@ return [
             'horizon:snapshot',
             'nova:publish',
         ],
+
     ],
 
     'database' => [
+
         'enabled' => env('MONITOR_DB_QUERY', true),
 
         'query' => [
             'bindings' => env('MONITOR_DB_BINDINGS', true),
         ],
+
     ],
 
     'exception' => [
+
         'enabled' => env('MONITOR_EXCEPTION', true),
+
     ],
 
     'gate' => [
+
         'enabled' => env('MONITOR_GATE', true),
+
     ],
 
     'http_client' => [
+
         'enabled' => env('MONITOR_HTTP_CLIENT', true),
+
         'body' => env('MONITOR_HTTP_CLIENT_BODY', true),
+
     ],
 
     'http' => [
@@ -112,11 +134,15 @@ return [
     ],
 
     'mail' => [
+
         'enabled' => env('MONITOR_MAIL', true),
+
     ],
 
     'notification' => [
+
         'enabled' => env('MONITOR_NOTIFICATION', true),
+
     ],
 
     'queue' => [

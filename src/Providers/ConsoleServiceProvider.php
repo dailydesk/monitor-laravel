@@ -20,11 +20,13 @@ class ConsoleServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // TODO: if the application isn't running the console or running unit tests or disable console monitoring.
-        if (! $this->app->runningInConsole() || $this->app->runningUnitTests() || ! config('monitor.console.enabled')) {
-            return;
+        if ($this->app->runningInConsole() && config('monitor.console.enabled')) {
+            $this->recordCommands();
         }
+    }
 
+    protected function recordCommands(): void
+    {
         $this->app['events']->listen(CommandStarting::class, function (CommandStarting $event) {
             if (! Monitor::shouldRecordCommand($event->command)) {
                 return;
@@ -32,7 +34,7 @@ class ConsoleServiceProvider extends ServiceProvider
 
             if (Monitor::needTransaction()) {
                 Monitor::startTransaction($event->command)
-                    ->setType('command')
+                    ->markAsCommand()
                     ->addContext('command', [
                         'arguments' => $event->input->getArguments(),
                         'options' => $event->input->getOptions(),
@@ -48,8 +50,12 @@ class ConsoleServiceProvider extends ServiceProvider
             }
 
             if (Monitor::hasTransaction() && Monitor::transaction()->name === $event->command) {
-                Monitor::transaction()->setResult($event->exitCode === 0 ? 'success' : 'error');
-            } elseif (\array_key_exists($event->command, $this->segments)) {
+                if ($event->exitCode === 0) {
+                    Monitor::transaction()->markAsSuccess();
+                } else {
+                    Monitor::transaction()->markAsFailed();
+                }
+            } elseif (array_key_exists($event->command, $this->segments)) {
                 $this->segments[$event->command]->end()->addContext('command', [
                     'exit_code' => $event->exitCode,
                     'arguments' => $event->input->getArguments(),

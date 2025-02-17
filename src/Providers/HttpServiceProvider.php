@@ -3,44 +3,33 @@
 namespace DailyDesk\Monitor\Laravel\Providers;
 
 use DailyDesk\Monitor\Laravel\Facades\Monitor;
-use DailyDesk\Monitor\Laravel\Filters;
+use DailyDesk\Monitor\Laravel\Http\Middleware\MonitorRequests;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Http\Kernel as HttpKernel;
 use Illuminate\Foundation\Http\Events\RequestHandled;
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 
 class HttpServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        if ($this->app->runningInConsole() || ! config('monitor.http.enabled')) {
-            return;
+        if (! $this->app->runningInConsole() && config('monitor.http.enabled')) {
+            $this->recordRequests();
         }
+    }
 
-        $this->app->booted(function ($app) {
-            /** @var \Illuminate\Foundation\Http\Kernel $kernel */
-            $kernel = $app[HttpKernel::class];
+    protected function recordRequests(): void
+    {
+        /** @var \Illuminate\Foundation\Http\Kernel $kernel */
+        $kernel = $this->app->make(HttpKernel::class);
 
-            if ($startedAt = $kernel->requestStartedAt()) {
-                $request = $app['request'];
+        $middleware = Arr::prepend(
+            $kernel->getGlobalMiddleware(),
+            MonitorRequests::class
+        );
 
-                if (Monitor::shouldRecordRequest($request)) {
-                    $array = explode('?', $request->decodedPath());
-                    $uri = array_shift($array);
-
-                    $transaction = Monitor::startTransaction(
-                        $request->method() . ' ' . '/' . trim($uri, '/')
-                    )->markAsRequest();
-
-                    $transaction->addContext(
-                        'request_body',
-                        Filters::hideParameters($request->all(), config('monitor.http.hidden_parameters'))
-                    );
-
-                    $transaction->timestamp = (float) $startedAt->format('U.u');
-                }
-            }
-        });
+        $kernel->setGlobalMiddleware($middleware);
 
         $this->app['events']->listen(RequestHandled::class, function (RequestHandled $event) {
             if ($transaction = Monitor::transaction()) {

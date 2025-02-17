@@ -6,13 +6,13 @@ use Throwable;
 
 class Monitor extends \DailyDesk\Monitor\Monitor
 {
-    public const VERSION = 'dev-main';
+    public const VERSION = '1.x-dev';
 
     public function call($callback, array $parameters = [])
     {
-        if (\is_string($callback)) {
+        if (is_string($callback)) {
             $label = $callback;
-        } elseif (\is_array($callback)) {
+        } elseif (is_array($callback)) {
             $label = get_class($callback[0]).'@'.$callback[1];
         } else {
             $label = 'closure';

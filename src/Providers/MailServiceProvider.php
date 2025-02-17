@@ -3,30 +3,30 @@
 namespace DailyDesk\Monitor\Laravel\Providers;
 
 use DailyDesk\Monitor\Laravel\Facades\Monitor;
+use DailyDesk\Monitor\Models\Segment;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Support\ServiceProvider;
-use Inspector\Models\Segment;
 
 class MailServiceProvider extends ServiceProvider
 {
     /**
-     * Segments collection.
-     *
-     * @var Segment[]
+     * @var array<string, Segment>
      */
-    protected $segments = [];
+    protected array $segments = [];
 
     /**
      * Booting of services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
-        if (! config('monitor.mail.enabled')) {
-            return;
+        if (config('monitor.mail.enabled')) {
+            $this->recordMails();
         }
+    }
+
+    protected function recordMails(): void
+    {
         $this->app['events']->listen(MessageSending::class, function (MessageSending $event) {
             if (Monitor::canAddSegments()) {
                 $this->segments[
@@ -35,8 +35,8 @@ class MailServiceProvider extends ServiceProvider
                     // Compatibility with Laravel 5.5
                     ->addContext(
                         'data',
-                        \property_exists($event, 'data')
-                            ? \array_intersect_key($event->data, \array_flip(['mailer']))
+                        property_exists($event, 'data')
+                            ? array_intersect_key($event->data, array_flip(['mailer']))
                             : []
                     );
             }
@@ -45,7 +45,7 @@ class MailServiceProvider extends ServiceProvider
         $this->app['events']->listen(MessageSent::class, function (MessageSent $event) {
             $key = $this->getSegmentKey($event->message);
 
-            if (\array_key_exists($key, $this->segments)) {
+            if (array_key_exists($key, $this->segments)) {
                 $this->segments[$key]->end();
             }
         });
@@ -54,11 +54,12 @@ class MailServiceProvider extends ServiceProvider
     /**
      * Generate a unique key for each message.
      *
-     * @param \Swift_Message|\Symfony\Component\Mime\Email $message
-     * @return string
+     * @param \Symfony\Component\Mime\Email $message
      */
-    protected function getSegmentKey($message)
+    protected function getSegmentKey($message): string
     {
-        return \sha1(\json_encode($message->getTo()).$message->getSubject());
+        return sha1(
+            json_encode($message->getTo()).$message->getSubject()
+        );
     }
 }

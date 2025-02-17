@@ -3,20 +3,18 @@
 namespace DailyDesk\Monitor\Laravel\Providers;
 
 use DailyDesk\Monitor\Laravel\Facades\Monitor;
+use DailyDesk\Monitor\Models\Segment;
 use Illuminate\Http\Client\Events\RequestSending;
 use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\ServiceProvider;
-use Inspector\Models\Segment;
 
 class HttpClientServiceProvider extends ServiceProvider
 {
     /**
-     * Segments collection.
-     *
      * @var Segment[]
      */
-    protected $segments = [];
+    protected array $segments = [];
 
     /**
      * Booting of services.
@@ -25,12 +23,15 @@ class HttpClientServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (! (config('monitor.http_client.enabled') &&
-            \class_exists('\Illuminate\Http\Client\Events\RequestSending') &&
-            \class_exists('\Illuminate\Http\Client\Events\ResponseReceived'))) {
-            return;
+        if (config('monitor.http_client.enabled') &&
+            class_exists('\Illuminate\Http\Client\Events\RequestSending') &&
+            class_exists('\Illuminate\Http\Client\Events\ResponseReceived')) {
+            $this->recordHttpRequests();
         }
+    }
 
+    protected function recordHttpRequests(): void
+    {
         $this->app['events']->listen(RequestSending::class, function (RequestSending $event) {
             if (Monitor::canAddSegments()) {
                 $this->segments[
@@ -49,7 +50,7 @@ class HttpClientServiceProvider extends ServiceProvider
                 $type = 'json';
             }
 
-            if (\array_key_exists($key, $this->segments)) {
+            if (array_key_exists($key, $this->segments)) {
                 $this->segments[$key]->end()
                     ->addContext('request', [
                         'method' => $event->request->method(),
@@ -63,7 +64,7 @@ class HttpClientServiceProvider extends ServiceProvider
                             'status' => $event->response->status(),
                             'headers' => $event->response->headers(),
                         ],
-                        Monitor::shouldRecordHttpClientBody() ? ['body' => $event->response->body()] : []
+                        config('monitor.http_client.body') ? ['body' => $event->response->body()] : []
                     ))
                     ->label = $event->response->status() . ' ' .
                     $event->request->method() . ' ' .
@@ -74,12 +75,9 @@ class HttpClientServiceProvider extends ServiceProvider
 
     /**
      * Generate the key to identify the segment in the segment collection.
-     *
-     * @param Request $request
-     * @return string
      */
-    protected function getSegmentKey(Request $request)
+    protected function getSegmentKey(Request $request): string
     {
-        return \sha1($request->body());
+        return sha1($request->body());
     }
 }

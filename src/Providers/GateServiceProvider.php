@@ -3,18 +3,18 @@
 namespace DailyDesk\Monitor\Laravel\Providers;
 
 use DailyDesk\Monitor\Laravel\Facades\Monitor;
+use DailyDesk\Monitor\Models\Segment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
-use Inspector\Models\Segment;
 
 class GateServiceProvider extends ServiceProvider
 {
     /**
      * @var Segment[]
      */
-    protected $segments = [];
+    protected array $segments = [];
 
     /**
      * Booting of services.
@@ -23,26 +23,22 @@ class GateServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (! config('monitor.gate.enabled')) {
-            return;
+        if (config('monitor.gate.enabled')) {
+            Gate::before([$this, 'beforeGateCheck']);
+            Gate::after([$this, 'afterGateCheck']);
         }
-
-        Gate::before([$this, 'beforeGateCheck']);
-        Gate::after([$this, 'afterGateCheck']);
     }
 
     /**
      * Intercepting before gate check.
      *
-     * @param \App\Models\User|\Illuminate\Contracts\Auth\Authenticatable $user
-     * @param string $ability
-     * @param $arguments
+     * @param  \App\Models\User|\Illuminate\Contracts\Auth\Authenticatable  $user
      */
-    public function beforeGateCheck($user, $ability, $arguments)
+    public function beforeGateCheck($user, string $ability, array $arguments): void
     {
         if (Monitor::canAddSegments()) {
-            $class = (\is_array($arguments) && ! empty($arguments))
-                ? (\is_string($arguments[0]) ? $arguments[0] : '')
+            $class = (is_array($arguments) && ! empty($arguments))
+                ? (is_string($arguments[0]) ? $arguments[0] : '')
                 : '';
 
             $label = "Gate::{$ability}({$class})";
@@ -58,12 +54,8 @@ class GateServiceProvider extends ServiceProvider
      * Intercepting after gate check.
      *
      * @param  \App\Models\User|\Illuminate\Contracts\Auth\Authenticatable  $user
-     * @param  string  $ability
-     * @param  bool  $result
-     * @param  array  $arguments
-     * @return bool
      */
-    public function afterGateCheck($user, $ability, $result, $arguments)
+    public function afterGateCheck($user, string $ability, bool $result, array $arguments): bool
     {
         $arguments = $this->formatArguments($arguments);
         $key = $this->generateUniqueKey($arguments);
@@ -91,52 +83,33 @@ class GateServiceProvider extends ServiceProvider
 
     /**
      * Generate a unique key to track segment's state.
-     *
-     * @param array $data
-     * @return string
      */
-    public function generateUniqueKey(array $data)
+    public function generateUniqueKey(array $data): string
     {
-        return \md5(\serialize($data));
+        return md5(serialize($data));
     }
 
     /**
      * Format gate arguments.
-     *
-     * @param array $arguments
-     * @return array
      */
-    public function formatArguments(array $arguments)
+    public function formatArguments(array $arguments): array
     {
-        return \array_map(function ($item) {
+        return array_map(function ($item) {
             return $item instanceof Model ? $this->formatModel($item) : $item;
         }, $arguments);
     }
 
     /**
      * Human readable model.
-     *
-     * @param $model
-     * @return string
      */
-    public function formatModel($model)
+    public function formatModel(Model $model): string
     {
-        return \get_class($model).':'.$model->getKey();
+        return get_class($model).':'.$model->getKey();
     }
 
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
+    protected function getCallerFromStackTrace(): array
     {
-        //
-    }
-
-    protected function getCallerFromStackTrace()
-    {
-        $trace = collect(\debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS))->forget(0);
+        $trace = collect(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS))->forget(0);
 
         return $trace->first(function ($frame) {
             if (! isset($frame['file'])) {

@@ -83,9 +83,7 @@ class MonitorTestCommand extends Command
         Monitor::report(new \Exception('First Exception detected'));
 
         // End the transaction
-        Monitor::transaction()
-            ->setResult('success')
-            ->end();
+        Monitor::transaction()->markAsSuccess()->end();
 
         $this->line('Done!');
     }

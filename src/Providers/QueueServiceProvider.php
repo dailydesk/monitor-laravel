@@ -4,6 +4,7 @@ namespace DailyDesk\Monitor\Laravel\Providers;
 
 use DailyDesk\Monitor\Laravel\Facades\Monitor;
 use DailyDesk\Monitor\Laravel\Filters;
+use DailyDesk\Monitor\Models\Segment;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
@@ -11,16 +12,13 @@ use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Events\JobReleasedAfterException;
 use Illuminate\Support\ServiceProvider;
-use Inspector\Models\Segment;
 
 class QueueServiceProvider extends ServiceProvider
 {
     /**
-     * Jobs to inspect.
-     *
-     * @var Segment[]
+     * @var array<string, Segment>
      */
-    protected $segments = [];
+    protected array $segments = [];
 
     /**
      * Booting of services.
@@ -58,7 +56,7 @@ class QueueServiceProvider extends ServiceProvider
             function (JobExceptionOccurred $event) {
                 // An unhandled exception will be reported by the ExceptionServiceProvider in case of a sync execution.
                 if (Monitor::canAddSegments() && $event->job->getConnectionName() !== 'sync') {
-                    Monitor::reportException($event->exception, false);
+                    Monitor::report($event->exception);
                 }
             }
         );
@@ -96,7 +94,7 @@ class QueueServiceProvider extends ServiceProvider
             function (JobFailed $event) {
                 if ($this->shouldBeMonitored($event->job->resolveName()) && Monitor::isRecording()) {
                     // JobExceptionOccurred event is called after JobFailed, so we have to report the exception here.
-                    Monitor::reportException($event->exception, false);
+                    Monitor::report($event->exception, false);
 
                     $this->handleJobEnd($event->job, true);
 
@@ -114,10 +112,8 @@ class QueueServiceProvider extends ServiceProvider
 
     /**
      * Determine the way to monitor the job.
-     *
-     * @param Job $job
      */
-    protected function handleJobStart(Job $job)
+    protected function handleJobStart(Job $job): void
     {
         if (Monitor::needTransaction()) {
             Monitor::startTransaction($job->resolveName())
@@ -130,10 +126,8 @@ class QueueServiceProvider extends ServiceProvider
 
     /**
      * Representing a job as a segment.
-     *
-     * @param Job $job
      */
-    protected function initializeSegment(Job $job)
+    protected function initializeSegment(Job $job): void
     {
         $segment = Monitor::startSegment('job', $job->resolveName())
             ->addContext('payload', $job->payload());
@@ -144,19 +138,17 @@ class QueueServiceProvider extends ServiceProvider
 
     /**
      * Finalize the monitoring of the job.
-     *
-     * @param Job $job
-     * @param bool $failed
      */
-    public function handleJobEnd(Job $job, $failed = false)
+    public function handleJobEnd(Job $job, bool $failed = false): void
     {
         $id = $this->getJobId($job);
 
-        if (\array_key_exists($id, $this->segments)) {
+        if (array_key_exists($id, $this->segments)) {
             $this->segments[$id]->end();
+        } elseif ($failed) {
+            Monitor::transaction()->markAsFailed();
         } else {
-            Monitor::transaction()
-                ->setResult($failed ? 'failed' : 'success');
+            Monitor::transaction()->markAsSuccess();
         }
 
         /*
@@ -172,24 +164,18 @@ class QueueServiceProvider extends ServiceProvider
 
     /**
      * Get the job ID.
-     *
-     * @param Job $job
-     * @return string
      */
-    public static function getJobId(Job $job)
+    protected static function getJobId(Job $job): string
     {
         if ($jobId = $job->getJobId()) {
             return $jobId;
         }
 
-        return \sha1($job->getRawBody());
+        return sha1($job->getRawBody());
     }
 
     /**
      * Determine if the given job needs to be monitored.
-     *
-     * @param string $job
-     * @return bool
      */
     protected function shouldBeMonitored(string $job): bool
     {
