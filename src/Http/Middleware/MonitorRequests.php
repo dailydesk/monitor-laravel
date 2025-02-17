@@ -5,14 +5,15 @@ namespace DailyDesk\Monitor\Laravel\Http\Middleware;
 use Closure;
 use DailyDesk\Monitor\Laravel\Facades\Monitor;
 use DailyDesk\Monitor\Laravel\Filters;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Contracts\Http\Kernel as HttpKernel;
 use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Http\Request;
 
 readonly class MonitorRequests
 {
-    public function __construct(private Kernel $kernel)
+    public function __construct(private Container $app)
     {
-        //
     }
 
     /**
@@ -35,9 +36,12 @@ readonly class MonitorRequests
                 ]
             );
 
-            $startedAt = $this->kernel->requestStartedAt();
+            /** @var Kernel $kernel */
+            $kernel = $this->app->make(HttpKernel::class);
 
-            $transaction->timestamp = (float) $startedAt->format('U.u');
+            $startedAt = $kernel->requestStartedAt() ?? now();
+
+            $transaction->start((float) $startedAt->format('U.u'));
         }
 
         return $next($request);
