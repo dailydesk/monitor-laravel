@@ -6,7 +6,7 @@ use Throwable;
 
 class Monitor extends \DailyDesk\Monitor\Monitor
 {
-    public const VERSION = '1.x-dev';
+    public const VERSION = '0.5.0';
 
     public function call($callback, array $parameters = [])
     {
