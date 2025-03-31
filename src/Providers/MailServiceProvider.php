@@ -7,6 +7,7 @@ use DailyDesk\Monitor\Models\Segment;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Support\ServiceProvider;
+use Symfony\Component\Mime\Email;
 
 class MailServiceProvider extends ServiceProvider
 {
@@ -53,10 +54,8 @@ class MailServiceProvider extends ServiceProvider
 
     /**
      * Generate a unique key for each message.
-     *
-     * @param \Symfony\Component\Mime\Email $message
      */
-    protected function getSegmentKey($message): string
+    protected function getSegmentKey(Email $message): string
     {
         return sha1(
             json_encode($message->getTo()).$message->getSubject()

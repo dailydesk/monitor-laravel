@@ -4,6 +4,7 @@ namespace DailyDesk\Monitor\Laravel\Providers;
 
 use DailyDesk\Monitor\Laravel\Facades\Monitor;
 use DailyDesk\Monitor\Models\Segment;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -12,16 +13,14 @@ use Illuminate\Support\Str;
 class GateServiceProvider extends ServiceProvider
 {
     /**
-     * @var Segment[]
+     * @var array<string, Segment>
      */
     protected array $segments = [];
 
     /**
      * Booting of services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         if (config('monitor.gate.enabled')) {
             Gate::before([$this, 'beforeGateCheck']);
@@ -31,17 +30,15 @@ class GateServiceProvider extends ServiceProvider
 
     /**
      * Intercepting before gate check.
-     *
-     * @param  \App\Models\User|\Illuminate\Contracts\Auth\Authenticatable  $user
      */
-    public function beforeGateCheck($user, string $ability, array $arguments): void
+    public function beforeGateCheck(Authenticatable $user, string $ability, array $arguments): void
     {
         if (Monitor::canAddSegments()) {
-            $class = (is_array($arguments) && ! empty($arguments))
+            $class = ! empty($arguments)
                 ? (is_string($arguments[0]) ? $arguments[0] : '')
                 : '';
 
-            $label = "Gate::{$ability}({$class})";
+            $label = "Gate::$ability($class)";
 
             $this->segments[
             $this->generateUniqueKey($this->formatArguments($arguments))
@@ -52,10 +49,8 @@ class GateServiceProvider extends ServiceProvider
 
     /**
      * Intercepting after gate check.
-     *
-     * @param  \App\Models\User|\Illuminate\Contracts\Auth\Authenticatable  $user
      */
-    public function afterGateCheck($user, string $ability, bool $result, array $arguments): bool
+    public function afterGateCheck(Authenticatable $user, string $ability, bool $result, array $arguments): bool
     {
         $arguments = $this->formatArguments($arguments);
         $key = $this->generateUniqueKey($arguments);

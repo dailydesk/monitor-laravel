@@ -21,8 +21,6 @@ return [
     | This key is for the Monitor platform to detect which service should be
     | picked when recording data.
     |
-    | You can find this key on your service settings page.
-    |
     */
 
     'key' => env('MONITOR_KEY'),
@@ -32,11 +30,20 @@ return [
     | Monitor URL
     |--------------------------------------------------------------------------
     |
-    | The ingestion base URL of the Monitor platform
+    | The ingestion base URL of the Monitor platform.
     |
     */
 
-    'url' => env('MONITOR_URL'),
+    'url' => env('MONITOR_URL', 'https://ingest.dailydesk.app'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Console
+    |--------------------------------------------------------------------------
+    |
+    | Define how it should monitor Console commands.
+    |
+    */
 
     'console' => [
 
@@ -82,6 +89,15 @@ return [
 
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Database
+    |--------------------------------------------------------------------------
+    |
+    | Define how it should monitor the Database component.
+    |
+    */
+
     'database' => [
 
         'enabled' => env('MONITOR_DB_QUERY', true),
@@ -92,17 +108,44 @@ return [
 
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Exception
+    |--------------------------------------------------------------------------
+    |
+    | Define how it should monitor exceptions.
+    |
+    */
+
     'exception' => [
 
         'enabled' => env('MONITOR_EXCEPTION', true),
 
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Gate
+    |--------------------------------------------------------------------------
+    |
+    | Define how it should monitor the Gate component.
+    |
+    */
+
     'gate' => [
 
         'enabled' => env('MONITOR_GATE', true),
 
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | HTTP Client
+    |--------------------------------------------------------------------------
+    |
+    | Define how it should monitor the HTTP Client component.
+    |
+    */
 
     'http_client' => [
 
@@ -111,6 +154,15 @@ return [
         'body' => env('MONITOR_HTTP_CLIENT_BODY', true),
 
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | HTTP
+    |--------------------------------------------------------------------------
+    |
+    | Define how it should monitor HTTP requests.
+    |
+    */
 
     'http' => [
 
@@ -133,17 +185,44 @@ return [
 
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Mail
+    |--------------------------------------------------------------------------
+    |
+    | Define how it should monitor the Mail component.
+    |
+    */
+
     'mail' => [
 
         'enabled' => env('MONITOR_MAIL', true),
 
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Notification
+    |--------------------------------------------------------------------------
+    |
+    | Define how it should monitor the Notification component.
+    |
+    */
+
     'notification' => [
 
         'enabled' => env('MONITOR_NOTIFICATION', true),
 
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Queue
+    |--------------------------------------------------------------------------
+    |
+    | Define how it should monitor the Queue component.
+    |
+    */
 
     'queue' => [
 

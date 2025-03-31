@@ -21,6 +21,13 @@ class MonitorServiceProvider extends AggregateServiceProvider
 
     public function register(): void
     {
+        $this->registerMonitorInstance();
+
+        parent::register();
+    }
+
+    protected function registerMonitorInstance(): void
+    {
         $this->mergeConfigFrom(__DIR__ . '/../config/monitor.php', 'monitor');
 
         $this->app->singleton('monitor', function () {
@@ -39,8 +46,6 @@ class MonitorServiceProvider extends AggregateServiceProvider
         });
 
         $this->app->alias('monitor', Monitor::class);
-
-        parent::register();
     }
 
     /**
