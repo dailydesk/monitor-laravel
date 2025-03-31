@@ -3,7 +3,6 @@
 namespace DailyDesk\Monitor\Laravel\Providers;
 
 use DailyDesk\Monitor\Laravel\Facades\Monitor;
-use DailyDesk\Monitor\Laravel\Filters;
 use DailyDesk\Monitor\Models\Segment;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Queue\Events\JobExceptionOccurred;
@@ -22,10 +21,8 @@ class QueueServiceProvider extends ServiceProvider
 
     /**
      * Booting of services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         if (! config('monitor.queue.enabled')) {
             return;
@@ -45,7 +42,7 @@ class QueueServiceProvider extends ServiceProvider
                     Monitor::startRecording();
                 }
 
-                if ($this->shouldBeMonitored($event->job->resolveName())) {
+                if (Monitor::shouldRecordJob($event->job)) {
                     $this->handleJobStart($event->job);
                 }
             }
@@ -64,7 +61,7 @@ class QueueServiceProvider extends ServiceProvider
         $this->app['events']->listen(
             JobProcessed::class,
             function ($event) {
-                if ($this->shouldBeMonitored($event->job->resolveName()) && Monitor::isRecording()) {
+                if (Monitor::shouldRecordJob($event->job) && Monitor::isRecording()) {
                     $this->handleJobEnd($event->job);
                 }
             }
@@ -74,7 +71,7 @@ class QueueServiceProvider extends ServiceProvider
             $this->app['events']->listen(
                 JobReleasedAfterException::class,
                 function (JobReleasedAfterException $event) {
-                    if ($this->shouldBeMonitored($event->job->resolveName()) && Monitor::isRecording()) {
+                    if (Monitor::shouldRecordJob($event->job) && Monitor::isRecording()) {
                         $this->handleJobEnd($event->job, true);
 
                         // Laravel throws the current exception after raising the failed events.
@@ -92,9 +89,9 @@ class QueueServiceProvider extends ServiceProvider
         $this->app['events']->listen(
             JobFailed::class,
             function (JobFailed $event) {
-                if ($this->shouldBeMonitored($event->job->resolveName()) && Monitor::isRecording()) {
+                if (Monitor::shouldRecordJob($event->job) && Monitor::isRecording()) {
                     // JobExceptionOccurred event is called after JobFailed, so we have to report the exception here.
-                    Monitor::report($event->exception, false);
+                    Monitor::report($event->exception);
 
                     $this->handleJobEnd($event->job, true);
 
@@ -172,13 +169,5 @@ class QueueServiceProvider extends ServiceProvider
         }
 
         return sha1($job->getRawBody());
-    }
-
-    /**
-     * Determine if the given job needs to be monitored.
-     */
-    protected function shouldBeMonitored(string $job): bool
-    {
-        return Filters::isApprovedJobClass($job, config('monitor.queue.ignored_jobs'));
     }
 }

@@ -2,6 +2,8 @@
 
 namespace DailyDesk\Monitor\Laravel;
 
+use Illuminate\Contracts\Queue\Job;
+use Illuminate\Http\Request;
 use Throwable;
 
 class Monitor extends \DailyDesk\Monitor\Monitor
@@ -43,13 +45,19 @@ class Monitor extends \DailyDesk\Monitor\Monitor
 
     /**
      * Determine if the given request should be recorded.
-     *
-     * @param  \Illuminate\Http\Request $request
      */
-    public function shouldRecordRequest($request): bool
+    public function shouldRecordRequest(Request $request): bool
     {
         $ignoredUrls = config('monitor.http.ignored_urls');
 
         return config('monitor.http.enabled') && Filters::isApprovedRequest($ignoredUrls, $request->decodedPath());
+    }
+
+    /**
+     * Determine if the given job should be recorded.
+     */
+    public function shouldRecordJob(Job $job): bool
+    {
+        return Filters::isApprovedJobClass($job->resolveName(), config('monitor.queue.ignored_jobs'));
     }
 }

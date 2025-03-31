@@ -12,16 +12,14 @@ use Illuminate\Support\ServiceProvider;
 class HttpClientServiceProvider extends ServiceProvider
 {
     /**
-     * @var Segment[]
+     * @var array<string, Segment>
      */
     protected array $segments = [];
 
     /**
      * Booting of services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         if (config('monitor.http_client.enabled') &&
             class_exists('\Illuminate\Http\Client\Events\RequestSending') &&
@@ -51,22 +49,26 @@ class HttpClientServiceProvider extends ServiceProvider
             }
 
             if (array_key_exists($key, $this->segments)) {
-                $this->segments[$key]->end()
-                    ->addContext('request', [
+                $segment = $this->segments[$key];
+
+                $segment->end();
+
+                $segment->addContext('request', [
                         'method' => $event->request->method(),
                         'url' => $event->request->url(),
                         'type' => $type,
                         'headers' => $event->request->headers(),
                         'data' => $event->request->data(),
                     ])
-                    ->addContext('response', \array_merge(
+                    ->addContext('response', array_merge(
                         [
                             'status' => $event->response->status(),
                             'headers' => $event->response->headers(),
                         ],
                         config('monitor.http_client.body') ? ['body' => $event->response->body()] : []
-                    ))
-                    ->label = $event->response->status() . ' ' .
+                    ));
+
+                $segment->label = $event->response->status() . ' ' .
                     $event->request->method() . ' ' .
                     $event->request->url();
             }

@@ -2,17 +2,12 @@
 
 namespace DailyDesk\Monitor\Laravel;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
 class Filters
 {
     /**
      * Determine if the given request should be monitored.
-     *
-     * @param string[] $notAllowed
-     * @param Request $request
-     * @return bool
      */
     public static function isApprovedRequest(array $notAllowed, string $path): bool
     {
@@ -34,7 +29,7 @@ class Filters
      */
     public static function isApprovedArtisanCommand(string $command, ?array $notAllowed): bool
     {
-        if (\is_null($notAllowed)) {
+        if (is_null($notAllowed)) {
             return true;
         }
 
@@ -61,24 +56,16 @@ class Filters
 
     /**
      * Determine if the given Job class should be monitored.
-     *
-     * @param null|string[] $notAllowed
-     * @param string $class
-     * @return bool
      */
-    public static function isApprovedJobClass(string $class, ?array $notAllowed)
+    public static function isApprovedJobClass(string $class, ?array $notAllowed): bool
     {
-        return ! \is_array($notAllowed) || ! \in_array($class, $notAllowed);
+        return ! is_array($notAllowed) || ! in_array($class, $notAllowed);
     }
 
     /**
      * Hide the given request parameters.
-     *
-     * @param array $data
-     * @param array $hidden
-     * @return array
      */
-    public static function hideParameters($data, $hidden)
+    public static function hideParameters(array $data, array $hidden): array
     {
         foreach ($hidden as $parameter) {
             if (Arr::get($data, $parameter)) {

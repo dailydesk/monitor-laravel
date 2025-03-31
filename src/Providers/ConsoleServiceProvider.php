@@ -11,7 +11,7 @@ use Illuminate\Support\ServiceProvider;
 class ConsoleServiceProvider extends ServiceProvider
 {
     /**
-     * @var Segment[]
+     * @var array<string, Segment>
      */
     protected array $segments = [];
 

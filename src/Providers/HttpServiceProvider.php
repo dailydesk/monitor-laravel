@@ -7,6 +7,8 @@ use DailyDesk\Monitor\Laravel\Http\Middleware\MonitorRequests;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Http\Kernel as HttpKernel;
 use Illuminate\Foundation\Http\Events\RequestHandled;
+use Illuminate\Foundation\Http\Kernel;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,7 +23,7 @@ class HttpServiceProvider extends ServiceProvider
 
     protected function recordRequests(): void
     {
-        /** @var \Illuminate\Foundation\Http\Kernel $kernel */
+        /** @var Kernel $kernel */
         $kernel = $this->app->make(HttpKernel::class);
 
         $middleware = Arr::prepend(
@@ -38,7 +40,7 @@ class HttpServiceProvider extends ServiceProvider
 
                 $route = $request->route();
 
-                if ($route instanceof \Illuminate\Routing\Route) {
+                if ($route instanceof Route) {
                     $uri = $request->route()->uri();
                     $transaction->name = $request->method() . ' ' . '/' . trim($uri, '/');
                 }
@@ -47,7 +49,7 @@ class HttpServiceProvider extends ServiceProvider
                     $transaction->withUser($user->getAuthIdentifier());
                 }
 
-                $transaction->setResult($response->getStatusCode());
+                $transaction->setResult((string) $response->getStatusCode());
             }
         });
     }
