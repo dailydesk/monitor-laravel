@@ -21,7 +21,7 @@ readonly class MonitorRequests
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        if (Monitor::shouldRecordRequest($request)) {
+        if (Monitor::isRecording() && Monitor::shouldRecordRequest($request)) {
             $array = explode('?', $request->decodedPath());
             $uri = array_shift($array);
 
@@ -45,5 +45,14 @@ readonly class MonitorRequests
         }
 
         return $next($request);
+    }
+
+    public function terminate($request, $response)
+    {
+        if (Monitor::isRecording()) {
+            Monitor::flush();
+        } else {
+            Monitor::clear();
+        }
     }
 }
